@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     final int SELECT_VIDEO_CODE = 101;
     final int SCALE_RESOLUTION = 640;
+    final String TAG = "MainActivity";
 
     Button addButton;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             loadResourcesFromRaw();
-        } catch (IOException e) {
+        } catch (AssertionError e) {
             //TODO vyresit
         }
 
@@ -92,17 +93,15 @@ public class MainActivity extends AppCompatActivity {
      * zkopiruje yolo config a weights do slozky aplikace
      * a s jejich pomoci inicializuje nativni tridy
      */
-    private void loadResourcesFromRaw() throws IOException{
+    private void loadResourcesFromRaw() throws AssertionError{
         File dir = getDir("Resources", Context.MODE_PRIVATE);
         File cfg = loadFromRaw("yolo_tiny_config", "cfg", dir);
         File weights = loadFromRaw("yolo_tiny_weights", "weights", dir);
 
-        if(cfg != null || weights != null) {
-            assert cfg != null;
-            init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
-        }else{
-            throw new IOException("Loading resources failed");
-        }
+
+        assert cfg != null;
+        assert weights != null;
+        init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
     }
 
     private File loadFromRaw( String file, String suffix, File directory){
