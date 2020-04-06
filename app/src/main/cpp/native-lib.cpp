@@ -1,5 +1,14 @@
 #include <jni.h>
 #include <string>
+#include <memory>
+#include <android/log.h>
+
+#include <opencv2/core.hpp>
+#include <opencv2/tracking.hpp>
+
+#include "Detektor.h"
+
+
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_musil_adam_trackingiron_MainActivity_stringFromJNI(
