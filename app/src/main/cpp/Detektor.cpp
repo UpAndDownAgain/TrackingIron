@@ -1,5 +1,5 @@
 //
-// Created by nrg on 4/2/20.
+// Created by Musil Adam on 4/2/20.
 //
 
 #include "Detektor.h"

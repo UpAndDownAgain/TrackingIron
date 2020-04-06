@@ -7,7 +7,7 @@
 #include <opencv2/tracking.hpp>
 
 #include "Detektor.h"
-
+#include "Utility.h"
 
 
 extern "C" JNIEXPORT jstring JNICALL
