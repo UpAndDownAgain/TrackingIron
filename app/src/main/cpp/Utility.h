@@ -21,6 +21,13 @@ namespace MyUtils{
      */
     std::string convertJStringToStdString(JNIEnv *env, jstring input);
 
+    /**
+     * pomocna metoda na vykresleni drahy do snimku
+     * @param path vektor bodu drahy
+     * @param frame snimek k vykresleni
+     * @param color barva drahy
+     * @param size velikost drahy
+     */
     void drawBarPath(std::vector<cv::Point> &path, cv::Mat &frame, cv::Scalar &color, int size);
 
 }
