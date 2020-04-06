@@ -37,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try{
+            loadResourcesFromRaw();
+        } catch (IOException e) {
+            //TODO vyresit
+        }
+
         addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,20 +92,27 @@ public class MainActivity extends AppCompatActivity {
      * zkopiruje yolo config a weights do slozky aplikace
      * a s jejich pomoci inicializuje nativni tridy
      */
-    private void loadResourcesFromRaw(){
+    private void loadResourcesFromRaw() throws IOException{
         File dir = getDir("Resources", Context.MODE_PRIVATE);
-        loadFromRaw("yolo_tiny_config", "cfg", dir);
-        loadFromRaw("yolo_tiny_weights", "weights", dir);
+        File cfg = loadFromRaw("yolo_tiny_config", "cfg", dir);
+        File weights = loadFromRaw("yolo_tiny_weights", "weights", dir);
 
+        if(cfg != null || weights != null) {
+            assert cfg != null;
+            init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
+        }else{
+            throw new IOException("Loading resources failed");
+        }
     }
 
-    private void loadFromRaw( String file, String suffix, File directory){
+    private File loadFromRaw( String file, String suffix, File directory){
         InputStream is;
         OutputStream os;
+        File newFile = null;
         try{
             is = getResources().openRawResource(
                     getResources().getIdentifier(file, "raw", getPackageName()));
-            File newFile = new File(directory, file + "." + suffix);
+            newFile = new File(directory, file + "." + suffix);
             os = new FileOutputStream(newFile);
 
             byte[] buffer = new byte[4096];
@@ -111,11 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
             is.close();
             os.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return newFile;
     }
 
     /**
