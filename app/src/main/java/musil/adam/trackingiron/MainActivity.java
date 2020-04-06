@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (AssertionError e) {
             //TODO vyresit
         }
-
+        /*
         addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(selectVideoIntent, SELECT_VIDEO_CODE);
             }
         });
-
+        */
 
     }
 
