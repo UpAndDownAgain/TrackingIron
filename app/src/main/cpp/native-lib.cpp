@@ -17,3 +17,9 @@ Java_musil_adam_trackingiron_MainActivity_stringFromJNI(
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_init_1jni(JNIEnv *env, jobject thiz, jstring cfg,
+                                                    jstring weights) {
+    // TODO: implement init_jni()
+}

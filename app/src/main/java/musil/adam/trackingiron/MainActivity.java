@@ -3,12 +3,20 @@ package musil.adam.trackingiron;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     final int SELECT_VIDEO_CODE = 101;
+    final int SCALE_RESOLUTION = 640;
 
     Button addButton;
 
@@ -48,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == SELECT_VIDEO_CODE && data != null){
             videoFileUri = data.getData();
-            //todo zpracovani videa
+
+            Uri processed = processVideo(videoFileUri);
             //todo pridani videa do seznamu
-            Uri processed;
 
             //prehrani zpracovaneho videa
             Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
@@ -60,8 +69,57 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
+     * provedeni detekci na videu
+     * nacte jednotlive snimky ze souboru preda je do native kde probehne detekce a vykresleni drahy
+     * vysledek ulozi do noveho video souboru
+     * @param video original
+     * @return zpracovane video s vykreslenou drahou
      */
-    public native String stringFromJNI();
+    private Uri processVideo(Uri video){
+        Uri processedVid = null;
+        //TODO zpracovat video
+
+        return processedVid;
+    }
+
+    /**
+     * zkopiruje yolo config a weights do slozky aplikace
+     * a s jejich pomoci inicializuje nativni tridy
+     */
+    private void loadResourcesFromRaw(){
+        File dir = getDir("Resources", Context.MODE_PRIVATE);
+        loadFromRaw("yolo_tiny_config", "cfg", dir);
+        loadFromRaw("yolo_tiny_weights", "weights", dir);
+
+    }
+
+    private void loadFromRaw( String file, String suffix, File directory){
+        InputStream is;
+        OutputStream os;
+        try{
+            is = getResources().openRawResource(
+                    getResources().getIdentifier(file, "raw", getPackageName()));
+            File newFile = new File(directory, file + "." + suffix);
+            os = new FileOutputStream(newFile);
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while((bytesRead = is.read(buffer)) != -1){
+                os.write(buffer);
+            }
+
+            is.close();
+            os.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * hlavicky nativnich metod pro volani s jni
+     */
+    public native void init_jni(String cfg, String weights);
 }
