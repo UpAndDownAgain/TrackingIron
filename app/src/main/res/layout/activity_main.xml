@@ -7,13 +7,13 @@
     tools:context=".MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
         android:clickable="true"
-        app:backgroundTint="@null"
-        app:fabSize="auto"
-        app:rippleColor="@null"
-        app:srcCompat="@drawable/add_circle" />
+        android:focusable="true"
+        app:srcCompat="@drawable/ic_add_fab"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

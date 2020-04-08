@@ -11,6 +11,8 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,11 +27,11 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    final int SELECT_VIDEO_CODE = 101;
-    final int SCALE_RESOLUTION = 640;
-    final String TAG = "MainActivity";
+    final static int SELECT_VIDEO_CODE = 101;
+    final static int SCALE_RESOLUTION = 640;
+    final static String TAG = "MainActivity";
 
-    Button addButton;
+    FloatingActionButton addButton;
 
     Uri videoFileUri;
 
@@ -43,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (AssertionError e) {
             //TODO vyresit
         }
-        /*
-        addButton = findViewById(R.id.addButton);
+
+        addButton = findViewById(R.id.fab);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(selectVideoIntent, SELECT_VIDEO_CODE);
             }
         });
-        */
+
 
     }
 
