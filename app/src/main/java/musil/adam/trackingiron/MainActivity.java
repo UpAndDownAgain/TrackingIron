@@ -293,7 +293,11 @@ public class MainActivity extends AppCompatActivity {
         init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
     }
 
-
+    @Override
+    protected void onDestroy() {
+        cleanUp_jni();
+        super.onDestroy();
+    }
 
     /**
      * hlavicky nativnich metod jni
