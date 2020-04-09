@@ -82,3 +82,41 @@ Java_musil_adam_trackingiron_MainActivity_detectAndDraw_1jni(JNIEnv *env, jobjec
     MyUtils::drawBarPath(barPath, *originalMat, barPathColor, barPathSize);
 
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_setDrawBox_1jni(JNIEnv *env, jobject thiz, jboolean draw_box) {
+    drawBox = draw_box;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_setBoxSize_1jni(JNIEnv *env, jobject thiz, jint size) {
+    boxSize = size;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_setBoxColor_1jni(JNIEnv *env, jobject thiz, jint r, jint g,
+                                                      jint b) {
+    boxColor = cv::Scalar(r, g, b);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_setBarPathSize_1jni(JNIEnv *env, jobject thiz, jint size) {
+    barPathSize = size;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_setBarPathColor_1jni(JNIEnv *env, jobject thiz, jint r, jint g,
+                                                          jint b) {
+    barPathColor = cv::Scalar(r, g, b);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_cleanUp_1jni(JNIEnv *env, jobject thiz) {
+    detektor.release();
+    tracker.release();
+}extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_MainActivity_clearBarPath_1jni(JNIEnv *env, jobject thiz) {
+    barPath.clear();
+    trackerIsInit = false;
+}

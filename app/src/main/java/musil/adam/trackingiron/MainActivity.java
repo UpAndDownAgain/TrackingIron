@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkMyPermission(MY_WRITE_PERMISSION_CODE);
-                //TODO permission
                 Intent selectVideoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(selectVideoIntent, SELECT_VIDEO_CODE);
             }
@@ -185,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 frame = frameGrabber.grabImage();
                 if(frame == null){
                     //konec videa
+                    clearBarPath_jni();
                     break;
                 }
                 Log.i("PROCESSING", "processing frame " + ++counter);
@@ -277,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * zkopiruje yolo config a weights do slozky aplikace
      * a s jejich pomoci inicializuje nativni tridy
@@ -301,4 +302,12 @@ public class MainActivity extends AppCompatActivity {
     public native void init_jni(String cfg, String weights);
     //provede detekci a vykresleni do snimku
     public native void detectAndDraw_jni(long matAddress);
+
+    public native void setDrawBox_jni(boolean drawBox);
+    public native void setBoxSize_jni(int size);
+    public native void setBoxColor_jni(int r, int g, int b);
+    public native void setBarPathSize_jni(int size);
+    public native void setBarPathColor_jni(int r, int g, int b);
+    public native void cleanUp_jni();
+    public native void clearBarPath_jni();
 }
