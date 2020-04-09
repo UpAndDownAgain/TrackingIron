@@ -140,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
 
             final String format = "mp4"; //todo set programatically
             frameGrabber.setFormat(format);
-            //frameGrabber.setVideoCodec(avcodec.AV_CODEC_ID_H264);
             frameGrabber.start();
 
             int sourceHeight = frameGrabber.getImageHeight();
@@ -299,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * hlavicky nativnich metod pro volani s jni
+     * hlavicky nativnich metod jni
      */
     public native void init_jni(String cfg, String weights);
 }

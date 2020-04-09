@@ -23,6 +23,9 @@ public class Utilities {
         return myAppDir;
     }
 
+    /**
+     * funkce zkopiruje data z res/raw do slozky applikace a vrati File
+     */
     public static File loadFromRaw(Resources res, String packageName, String file, String suffix, File directory){
         InputStream is;
         OutputStream os;
