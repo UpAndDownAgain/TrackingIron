@@ -107,8 +107,9 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SELECT_VIDEO_CODE && data != null) {
             videoFileUri = data.getData();
 
-            File directory = Utilities.getMyAppDirectory();
             try {
+                File directory = Utilities.getMyAppDirectory();
+
                 Uri processed = processVideo(videoFileUri, directory);
 
                 Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
             }catch (IOException e){
                 e.printStackTrace();
                 new AlertDialog.Builder(this)
-                        .setTitle("Error opening video")
-                        .setMessage("Unable to open video file")
+                        .setTitle("Error")
+                        .setMessage(e.toString())
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
      * @return zpracovane video s vykreslenou drahou
      */
     private Uri processVideo(Uri video, File directory) throws IOException{
-        Uri processedVid = null;
+        Uri processedVid;
 
         try {
             final ContentResolver resolver = getApplicationContext().getContentResolver();
@@ -224,16 +225,10 @@ public class MainActivity extends AppCompatActivity {
 
             processedVid = Uri.fromFile(outFile);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (FrameGrabber.Exception e) {
-            e.printStackTrace();
-        } catch (FrameRecorder.Exception e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            throw e;
         }
-
 
         return processedVid;
     }
