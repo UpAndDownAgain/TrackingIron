@@ -193,9 +193,6 @@ public class MainActivity extends AppCompatActivity {
 
                 detectAndDraw_jni(mat.getNativeObjAddr());
 
-                Imgproc.putText(mat, "TrackingIron", point,
-                        Imgproc.FONT_HERSHEY_COMPLEX, 1, textColor, 2);
-
                 Utils.matToBitmap(mat, bmp);
                 frame = converter.convert(bmp);
                 frameRecorder.record(frame);
