@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 bmp = converter.convert(frame);
                 Utils.bitmapToMat(bmp, mat);
 
-                //todo call detection
+                detectAndDraw_jni(mat.getNativeObjAddr());
 
                 Imgproc.putText(mat, "TrackingIron", point,
                         Imgproc.FONT_HERSHEY_COMPLEX, 1, textColor, 2);
@@ -300,5 +300,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * hlavicky nativnich metod jni
      */
+    //inicializace detektoru a trackeru
     public native void init_jni(String cfg, String weights);
+    //provede detekci a vykresleni do snimku
+    public native void detectAndDraw_jni(long matAddress);
 }
