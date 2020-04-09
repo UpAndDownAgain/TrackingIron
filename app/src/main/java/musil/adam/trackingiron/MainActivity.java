@@ -44,7 +44,7 @@ import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'native-lib' library on application startup.
+    // nacteni nativnich knihoven
     static {
         System.loadLibrary("native-lib");
     }
@@ -65,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkMyPermission(MY_READ_PERMISSION_CODE);
         PACKAGE_NAME = getPackageName();
+
+        checkMyPermission(MY_READ_PERMISSION_CODE);
+
         try {
             //rozbali yolo cfg a weights, inicializuje tridy v native
             loadResources();
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
         }
-
+        //FAB na pridani pridani noveho videa
         addButton = findViewById(R.id.fab);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,16 +108,25 @@ public class MainActivity extends AppCompatActivity {
             videoFileUri = data.getData();
 
             File directory = Utilities.getMyAppDirectory();
-            Uri processed = processVideo(videoFileUri, directory);
+            try {
+                Uri processed = processVideo(videoFileUri, directory);
 
-            Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
-            playVideoIntent.setData(processed);
-            startActivity(playVideoIntent);
+                Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
+                playVideoIntent.setData(processed);
+                startActivity(playVideoIntent);
 
-            //todo pridani videa do seznamu
-
-            //prehrani zpracovaneho videa
-
+                //todo pridani videa do seznamu
+            }catch (IOException e){
+                e.printStackTrace();
+                new AlertDialog.Builder(this)
+                        .setTitle("Error opening video")
+                        .setMessage("Unable to open video file")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
         }
     }
 
@@ -127,14 +138,16 @@ public class MainActivity extends AppCompatActivity {
      * @param video original
      * @return zpracovane video s vykreslenou drahou
      */
-    private Uri processVideo(Uri video, File directory) {
+    private Uri processVideo(Uri video, File directory) throws IOException{
         Uri processedVid = null;
 
         try {
             final ContentResolver resolver = getApplicationContext().getContentResolver();
             final InputStream inputStream = resolver.openInputStream(video);
 
-            assert (inputStream != null);
+            if(inputStream == null){
+                throw new IOException("Error opening stream");
+            }
             final FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(inputStream);
             final FFmpegFrameRecorder frameRecorder;
 
