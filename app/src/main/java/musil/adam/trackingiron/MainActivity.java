@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     final static int SELECT_VIDEO_CODE        = 20001;
     final static int SCALE_RESOLUTION         = 640;
     final static String TAG = "MainActivity";
+    static String PACKAGE_NAME;
 
     FloatingActionButton addButton;
 
@@ -72,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         checkMyPermission(MY_READ_PERMISSION_CODE);
-
+        PACKAGE_NAME = getPackageName();
         try{
-            loadResourcesFromRaw();
+            loadResources();
         } catch (AssertionError e) {
             //TODO vyresit
         }
@@ -277,17 +279,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-
     }
 
     /**
      * zkopiruje yolo config a weights do slozky aplikace
      * a s jejich pomoci inicializuje nativni tridy
      */
-    private void loadResourcesFromRaw() throws AssertionError{
+    private void loadResources() throws AssertionError{
         File dir = getDir("Resources", Context.MODE_PRIVATE);
-        File cfg = loadFromRaw("yolo_tiny_config", "cfg", dir);
-        File weights = loadFromRaw("yolo_tiny_weights", "weights", dir);
+        File cfg = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_config", "cfg", dir);
+        File weights = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_weights", "weights", dir);
 
 
         assert cfg != null;
@@ -295,33 +296,7 @@ public class MainActivity extends AppCompatActivity {
         init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
     }
 
-    private File loadFromRaw( String file, String suffix, File directory){
-        InputStream is;
-        OutputStream os;
-        File newFile = null;
-        try{
-            is = getResources().openRawResource(
-                    getResources().getIdentifier(file, "raw", getPackageName()));
-            newFile = new File(directory, file + "." + suffix);
-            os = new FileOutputStream(newFile);
 
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-
-            while((bytesRead = is.read(buffer)) != -1){
-                os.write(buffer);
-            }
-
-            is.close();
-            os.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return newFile;
-    }
 
     /**
      * hlavicky nativnich metod pro volani s jni
