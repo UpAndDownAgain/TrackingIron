@@ -1,33 +1,28 @@
 package musil.adam.trackingiron;
 
+import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
@@ -38,14 +33,11 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Calendar;
 
 import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
@@ -57,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    final static int MY_READ_PERMISSION_CODE  = 10001;
+    final static int MY_READ_PERMISSION_CODE = 10001;
     final static int MY_WRITE_PERMISSION_CODE = 10002;
-    final static int SELECT_VIDEO_CODE        = 20001;
-    final static int SCALE_RESOLUTION         = 640;
+    final static int SELECT_VIDEO_CODE = 20001;
+    final static int SCALE_RESOLUTION = 640;
     final static String TAG = "MainActivity";
     static String PACKAGE_NAME;
 
@@ -75,10 +67,22 @@ public class MainActivity extends AppCompatActivity {
 
         checkMyPermission(MY_READ_PERMISSION_CODE);
         PACKAGE_NAME = getPackageName();
-        try{
+        try {
+            //rozbali yolo cfg a weights, inicializuje tridy v native
             loadResources();
-        } catch (AssertionError e) {
-            //TODO vyresit
+        } catch (FileNotFoundException e) {
+            //extrakce se nezdarila, zobrazi se informacni dialog
+            new AlertDialog.Builder(this)
+                    .setTitle("Error loading assets")
+                    .setMessage("Application wasn't able to extract it's assets, " +
+                            "please check there is enough space on device")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finishAndRemoveTask();
+                        }
+                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+
         }
 
         addButton = findViewById(R.id.fab);
@@ -98,15 +102,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == SELECT_VIDEO_CODE && data != null){
+        if (requestCode == SELECT_VIDEO_CODE && data != null) {
             videoFileUri = data.getData();
 
-                File directory = Utilities.getMyAppDirectory();
-                Uri processed = processVideo(videoFileUri, directory);
+            File directory = Utilities.getMyAppDirectory();
+            Uri processed = processVideo(videoFileUri, directory);
 
-                Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
-                playVideoIntent.setData(processed);
-                startActivity(playVideoIntent);
+            Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
+            playVideoIntent.setData(processed);
+            startActivity(playVideoIntent);
 
             //todo pridani videa do seznamu
 
@@ -119,17 +123,18 @@ public class MainActivity extends AppCompatActivity {
      * provedeni detekci na videu
      * nacte jednotlive snimky ze souboru preda je do native kde probehne detekce a vykresleni drahy
      * vysledek ulozi do noveho video souboru
+     *
      * @param video original
      * @return zpracovane video s vykreslenou drahou
      */
-    private Uri processVideo(Uri video, File directory){
+    private Uri processVideo(Uri video, File directory) {
         Uri processedVid = null;
 
-        try{
+        try {
             final ContentResolver resolver = getApplicationContext().getContentResolver();
             final InputStream inputStream = resolver.openInputStream(video);
 
-            assert(inputStream != null);
+            assert (inputStream != null);
             final FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(inputStream);
             final FFmpegFrameRecorder frameRecorder;
 
@@ -145,16 +150,16 @@ public class MainActivity extends AppCompatActivity {
             int sourceWidth = frameGrabber.getImageWidth();
             double scale;
 
-            if(sourceHeight > sourceWidth){
+            if (sourceHeight > sourceWidth) {
                 //portraid mode
-                scale = (double)SCALE_RESOLUTION / (double)sourceHeight;
-            }else{
+                scale = (double) SCALE_RESOLUTION / (double) sourceHeight;
+            } else {
                 //landscape mode
-                scale =  (double) SCALE_RESOLUTION / (double) sourceWidth;
+                scale = (double) SCALE_RESOLUTION / (double) sourceWidth;
             }
 
-            int scaledHeight = (int)(sourceHeight * scale);
-            int scaledWidth = (int)(sourceWidth * scale);
+            int scaledHeight = (int) (sourceHeight * scale);
+            int scaledWidth = (int) (sourceWidth * scale);
 
 
             frameGrabber.setImageHeight(scaledHeight);
@@ -172,17 +177,17 @@ public class MainActivity extends AppCompatActivity {
             frameRecorder.setFormat("mp4");
             frameRecorder.start();
 
-            final Point point = new Point(30,30);
-            final Scalar textColor = new Scalar(0,71,179);
+            final Point point = new Point(30, 30);
+            final Scalar textColor = new Scalar(0, 71, 179);
 
             Bitmap bmp;
             Mat mat = new Mat();
             Frame frame;
             int counter = 0;
 
-            while(true){
+            while (true) {
                 frame = frameGrabber.grabImage();
-                if(frame == null){
+                if (frame == null) {
                     //konec videa
                     clearBarPath_jni();
                     break;
@@ -220,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         return processedVid;
     }
 
-    private void checkMyPermission(int permissionCode){
+    private void checkMyPermission(int permissionCode) {
         switch (permissionCode) {
             case MY_READ_PERMISSION_CODE: {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
@@ -282,14 +287,14 @@ public class MainActivity extends AppCompatActivity {
      * zkopiruje yolo config a weights do slozky aplikace
      * a s jejich pomoci inicializuje nativni tridy
      */
-    private void loadResources() throws AssertionError{
+    private void loadResources() throws FileNotFoundException {
         File dir = getDir("Resources", Context.MODE_PRIVATE);
         File cfg = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_config", "cfg", dir);
         File weights = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_weights", "weights", dir);
 
-
-        assert cfg != null;
-        assert weights != null;
+        if (cfg == null || weights == null) {
+            throw new FileNotFoundException("Failed to load resources");
+        }
         init_jni(cfg.getAbsolutePath(), weights.getAbsolutePath());
     }
 
@@ -304,14 +309,21 @@ public class MainActivity extends AppCompatActivity {
      */
     //inicializace detektoru a trackeru
     public native void init_jni(String cfg, String weights);
+
     //provede detekci a vykresleni do snimku
     public native void detectAndDraw_jni(long matAddress);
 
     public native void setDrawBox_jni(boolean drawBox);
+
     public native void setBoxSize_jni(int size);
+
     public native void setBoxColor_jni(int r, int g, int b);
+
     public native void setBarPathSize_jni(int size);
+
     public native void setBarPathColor_jni(int r, int g, int b);
+
     public native void cleanUp_jni();
+
     public native void clearBarPath_jni();
 }
