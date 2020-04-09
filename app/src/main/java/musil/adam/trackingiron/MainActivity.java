@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
                 playVideoIntent.setData(processed);
-                //startActivity(playVideoIntent);
+                startActivity(playVideoIntent);
 
             //todo pridani videa do seznamu
 
