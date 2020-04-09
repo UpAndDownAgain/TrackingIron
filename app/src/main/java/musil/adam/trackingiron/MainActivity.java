@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == SELECT_VIDEO_CODE && data != null){
             videoFileUri = data.getData();
 
-                File directory = getMyAppDirectory();
+                File directory = Utilities.getMyAppDirectory();
                 Uri processed = processVideo(videoFileUri, directory);
 
                 Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
@@ -220,18 +220,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         return processedVid;
-    }
-
-    private File getMyAppDirectory()/* throws IOException*/{
-        File dcimDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        File myAppDir = new File(dcimDir, "TrackingIron");
-
-        if(!myAppDir.exists() ){
-            myAppDir.mkdirs();
-            //throw new IOException("ERROR CREATING DIRECTORY");
-        }
-
-        return myAppDir;
     }
 
     private void checkMyPermission(int permissionCode){
