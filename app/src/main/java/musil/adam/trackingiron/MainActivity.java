@@ -27,8 +27,6 @@ import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.FrameRecorder;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -49,11 +47,10 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    final static int MY_READ_PERMISSION_CODE = 10001;
+    final static int MY_READ_PERMISSION_CODE  = 10001;
     final static int MY_WRITE_PERMISSION_CODE = 10002;
-    final static int SELECT_VIDEO_CODE = 20001;
-    final static int SCALE_RESOLUTION = 640;
-    final static String TAG = "MainActivity";
+    final static int SELECT_VIDEO_CODE        = 20001;
+    final static int SCALE_RESOLUTION         = 640;
     static String PACKAGE_NAME;
 
     FloatingActionButton addButton;
@@ -233,13 +230,15 @@ public class MainActivity extends AppCompatActivity {
         return processedVid;
     }
 
+    //runtime kontrola permission
     private void checkMyPermission(int permissionCode) {
         switch (permissionCode) {
             case MY_READ_PERMISSION_CODE: {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         //todo
                     } else {
                         ActivityCompat.requestPermissions(MainActivity.this,
@@ -251,9 +250,10 @@ public class MainActivity extends AppCompatActivity {
             }
             case MY_WRITE_PERMISSION_CODE: {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         //todo
                     } else {
                         ActivityCompat.requestPermissions(MainActivity.this,
@@ -267,11 +267,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_READ_PERMISSION_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Read Permission Granted", Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Read Permission Granted",
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i("PERMISSION", "read permission denied");
                     this.finishAndRemoveTask();
@@ -279,8 +282,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case MY_WRITE_PERMISSION_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Write Permission Granted", Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Write Permission Granted",
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i("PERMISSION", "write permission denied");
                     this.finishAndRemoveTask();
@@ -297,8 +302,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadResources() throws FileNotFoundException {
         File dir = getDir("Resources", Context.MODE_PRIVATE);
-        File cfg = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_config", "cfg", dir);
-        File weights = Utilities.loadFromRaw(getResources(), PACKAGE_NAME, "yolo_tiny_weights", "weights", dir);
+        File cfg = Utilities.loadFromRaw(getResources(), PACKAGE_NAME,
+                "yolo_tiny_config", "cfg", dir);
+        File weights = Utilities.loadFromRaw(getResources(), PACKAGE_NAME,
+                "yolo_tiny_weights", "weights", dir);
 
         if (cfg == null || weights == null) {
             throw new FileNotFoundException("Failed to load resources");
