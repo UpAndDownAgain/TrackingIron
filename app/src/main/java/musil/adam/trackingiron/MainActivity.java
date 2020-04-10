@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkMyPermission(MY_WRITE_PERMISSION_CODE);
-                Intent selectVideoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                Intent selectVideoIntent = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(selectVideoIntent, SELECT_VIDEO_CODE);
             }
         });
@@ -105,10 +106,11 @@ public class MainActivity extends AppCompatActivity {
             videoFileUri = data.getData();
 
             try {
+                //slozka ulozeni videa
                 File directory = Utilities.getMyAppDirectory();
-
+                //vytvoreni noveho video souboru se zakreslenou detekci
                 Uri processed = processVideo(videoFileUri, directory);
-
+                //prehrani nove vytvoreneho videa
                 Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
                 playVideoIntent.setData(processed);
                 startActivity(playVideoIntent);
@@ -119,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("Error")
                         .setMessage(e.toString())
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                             }
@@ -172,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
             int scaledHeight = (int) (sourceHeight * scale);
             int scaledWidth = (int) (sourceWidth * scale);
 
-
             frameGrabber.setImageHeight(scaledHeight);
             frameGrabber.setImageWidth(scaledWidth);
             //viz https://github.com/bytedeco/javacpp-presets/blob/master/ffmpeg/src/gen/java/org/bytedeco/ffmpeg/global/swscale.java#L76-L86
@@ -187,9 +189,6 @@ public class MainActivity extends AppCompatActivity {
             frameRecorder.setVideoBitrate(500000);
             frameRecorder.setFormat("mp4");
             frameRecorder.start();
-
-            final Point point = new Point(30, 30);
-            final Scalar textColor = new Scalar(0, 71, 179);
 
             Bitmap bmp;
             Mat mat = new Mat();
