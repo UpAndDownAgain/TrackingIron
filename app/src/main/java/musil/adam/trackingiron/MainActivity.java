@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static String PACKAGE_NAME;
 
     FloatingActionButton addButton;
+    private ProgressBar spinner;
 
     Uri videoFileUri;
 
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
                     }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
         }
+        spinner = findViewById(R.id.spinner);
+        spinner.setVisibility(View.GONE);
+
         //FAB na pridani pridani noveho videa
         addButton = findViewById(R.id.fab);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     protected void onPreExecute() {
-
+                        spinner.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -118,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     protected void onPostExecute(Void aVoid) {
+                        spinner.setVisibility(View.GONE);
                         Uri processed = videoProcessingTask.getProcessedVid();
                         Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
                         playVideoIntent.setData(processed);
