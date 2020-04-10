@@ -26,7 +26,7 @@ import java.util.concurrent.Executor;
 
 import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
-class VideoProcessingTask{
+class VideoProcessor {
 
     private Uri inputVideo;
     private Uri outputVideo;
@@ -45,7 +45,7 @@ class VideoProcessingTask{
     private int scaleTo;
 
 
-    VideoProcessingTask(ContentResolver resolver, Uri inputVideo, File directory, String format, int scaleTo){
+    VideoProcessor(ContentResolver resolver, Uri inputVideo, File directory, String format, int scaleTo){
 
         converter = new AndroidFrameConverter();
         this.resolver = resolver;

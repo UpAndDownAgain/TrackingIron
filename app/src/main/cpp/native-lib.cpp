@@ -40,8 +40,8 @@ Java_musil_adam_trackingiron_MainActivity_init_1jni(JNIEnv *env, jobject thiz, j
  */
 extern "C"
 JNIEXPORT void JNICALL
-Java_musil_adam_trackingiron_VideoProcessingTask_detectAndDraw_1jni(JNIEnv *env, jobject thiz,
-                                                        jlong matAddress) {
+Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobject thiz,
+                                                               jlong matAddress) {
     //pointer na mat z javy
     auto originalMat = (cv::Mat*)matAddress;
     cv::Rect2d detection;
@@ -116,7 +116,7 @@ Java_musil_adam_trackingiron_MainActivity_cleanUp_1jni(JNIEnv *env, jobject thiz
     tracker.release();
 }extern "C"
 JNIEXPORT void JNICALL
-Java_musil_adam_trackingiron_VideoProcessingTask_clearBarPath_1jni(JNIEnv *env, jobject thiz) {
+Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobject thiz) {
     barPath.clear();
     trackerIsInit = false;
 }

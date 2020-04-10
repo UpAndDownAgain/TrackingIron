@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -101,36 +100,11 @@ public class MainActivity extends AppCompatActivity {
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
 
-                final VideoProcessingTask videoProcessingTask = new VideoProcessingTask(
+                final VideoProcessor processor = new VideoProcessor(
                         getContentResolver(), videoFileUri, directory, "mp4", SCALE_RESOLUTION);
 
-                new AsyncTask<Void, Void, Void>(){
-
-                    @Override
-                    protected void onPreExecute() {
-                        spinner.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        try {
-                            videoProcessingTask.processVideo();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        spinner.setVisibility(View.GONE);
-                        Uri processed = videoProcessingTask.getProcessedVid();
-                        Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
-                        playVideoIntent.setData(processed);
-                        startActivity(playVideoIntent);
-                    }
-                }.execute();
-
+                ProcessAsync processAsync = new ProcessAsync(processor, spinner, getApplicationContext());
+                processAsync.execute();
 
 
 
