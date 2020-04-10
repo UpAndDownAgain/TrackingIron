@@ -1,6 +1,8 @@
 package musil.adam.trackingiron;
 
 import android.content.res.Resources;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Environment;
 
 import java.io.File;
@@ -49,5 +51,12 @@ class Utilities {
             e.printStackTrace();
         }
         return newFile;
+    }
+
+    static String getFileExtensionFromUri(Uri uri){
+        String mimeType = new MediaMetadataRetriever().extractMetadata(
+                MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+
+        return mimeType.split("/")[1];
     }
 }

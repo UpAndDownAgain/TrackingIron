@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -100,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
 
+                String format = Utilities.getFileExtensionFromUri(videoFileUri);
+
                 final VideoProcessor processor = new VideoProcessor(
-                        getContentResolver(), videoFileUri, directory, "mp4", SCALE_RESOLUTION);
+                        getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
 
                 ProcessAsync processAsync = new ProcessAsync(processor, spinner, getApplicationContext());
                 processAsync.execute();
