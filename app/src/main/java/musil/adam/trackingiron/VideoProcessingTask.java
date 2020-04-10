@@ -20,11 +20,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.EventListener;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
-public class VideoProcessingTask implements Runnable{
+class VideoProcessingTask{
 
     private Uri inputVideo;
     private Uri outputVideo;
@@ -42,7 +44,8 @@ public class VideoProcessingTask implements Runnable{
     private int scaledHeight;
     private int scaleTo;
 
-    public VideoProcessingTask(ContentResolver resolver, Uri inputVideo, File directory, String format, int scaleTo){
+
+    VideoProcessingTask(ContentResolver resolver, Uri inputVideo, File directory, String format, int scaleTo){
 
         converter = new AndroidFrameConverter();
         this.resolver = resolver;
@@ -52,20 +55,11 @@ public class VideoProcessingTask implements Runnable{
         this.outputDir = directory;
     }
 
-    @Override
-    public void run() {
-        try {
-            processVideo();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Uri getProcessedVid(){
+    Uri getProcessedVid(){
         return outputVideo;
     }
 
-    private void processVideo() throws IOException {
+    void processVideo() throws IOException {
         InputStream is = resolver.openInputStream(inputVideo);
         grabber = new FFmpegFrameGrabber(is);
         grabber.setFormat(sourceFormat);
@@ -112,7 +106,9 @@ public class VideoProcessingTask implements Runnable{
         recorder.release();
         grabber.stop();
         grabber.release();
-        is.close();
+        if (is != null) {
+            is.close();
+        }
 
         outputVideo = Uri.fromFile(out);
     }

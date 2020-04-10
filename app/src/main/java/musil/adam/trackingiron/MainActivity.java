@@ -1,13 +1,12 @@
 package musil.adam.trackingiron;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -23,22 +22,9 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.bytedeco.javacv.AndroidFrameConverter;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-
-import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -110,23 +96,37 @@ public class MainActivity extends AppCompatActivity {
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
 
-                VideoProcessingTask videoProcessingTask = new VideoProcessingTask(
+                final VideoProcessingTask videoProcessingTask = new VideoProcessingTask(
                         getContentResolver(), videoFileUri, directory, "mp4", SCALE_RESOLUTION);
 
-                Thread processingThread = new Thread(videoProcessingTask);
-                try {
-                    processingThread.start();
-                    processingThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Uri processed = videoProcessingTask.getProcessedVid();
+                new AsyncTask<Void, Void, Void>(){
+
+                    @Override
+                    protected void onPreExecute() {
+
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        try {
+                            videoProcessingTask.processVideo();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        Uri processed = videoProcessingTask.getProcessedVid();
+                        Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
+                        playVideoIntent.setData(processed);
+                        startActivity(playVideoIntent);
+                    }
+                }.execute();
 
 
-                //prehrani nove vytvoreneho videa
-                Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
-                playVideoIntent.setData(processed);
-                startActivity(playVideoIntent);
+
 
                 //todo pridani videa do seznamu
             }catch (IOException e){
