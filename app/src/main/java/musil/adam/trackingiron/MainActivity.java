@@ -109,7 +109,20 @@ public class MainActivity extends AppCompatActivity {
                 //slozka ulozeni videa
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
-                Uri processed = processVideo(videoFileUri, directory);
+
+                VideoProcessingTask videoProcessingTask = new VideoProcessingTask(
+                        getContentResolver(), videoFileUri, directory, "mp4", SCALE_RESOLUTION);
+
+                Thread processingThread = new Thread(videoProcessingTask);
+                try {
+                    processingThread.start();
+                    processingThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Uri processed = videoProcessingTask.getProcessedVid();
+
+
                 //prehrani nove vytvoreneho videa
                 Intent playVideoIntent = new Intent(getApplicationContext(), VideoActivity.class);
                 playVideoIntent.setData(processed);
@@ -136,98 +149,8 @@ public class MainActivity extends AppCompatActivity {
      * nacte jednotlive snimky ze souboru preda je do native kde probehne detekce a vykresleni drahy
      * vysledek ulozi do noveho video souboru
      *
-     * @param video original
-     * @return zpracovane video s vykreslenou drahou
      */
-    private Uri processVideo(Uri video, File directory) throws IOException{
-        Uri processedVid;
 
-        try {
-            final ContentResolver resolver = getApplicationContext().getContentResolver();
-            final InputStream inputStream = resolver.openInputStream(video);
-
-            if(inputStream == null){
-                throw new IOException("Error opening stream");
-            }
-            final FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(inputStream);
-            final FFmpegFrameRecorder frameRecorder;
-
-            final AndroidFrameConverter converter = new AndroidFrameConverter();
-            final String filename = Calendar.getInstance().getTimeInMillis() + ".mp4";
-            final File outFile = new File(directory, filename);
-
-            final String format = "mp4"; //todo set programatically
-            frameGrabber.setFormat(format);
-            frameGrabber.start();
-
-            int sourceHeight = frameGrabber.getImageHeight();
-            int sourceWidth = frameGrabber.getImageWidth();
-            double scale;
-
-            if (sourceHeight > sourceWidth) {
-                //portraid mode
-                scale = (double) SCALE_RESOLUTION / (double) sourceHeight;
-            } else {
-                //landscape mode
-                scale = (double) SCALE_RESOLUTION / (double) sourceWidth;
-            }
-
-            int scaledHeight = (int) (sourceHeight * scale);
-            int scaledWidth = (int) (sourceWidth * scale);
-
-            frameGrabber.setImageHeight(scaledHeight);
-            frameGrabber.setImageWidth(scaledWidth);
-            //viz https://github.com/bytedeco/javacpp-presets/blob/master/ffmpeg/src/gen/java/org/bytedeco/ffmpeg/global/swscale.java#L76-L86
-            frameGrabber.setImageScalingFlags(SWS_AREA);
-
-
-            //inicializace recorderu musi probehnout az po spusteni grabberu
-            frameRecorder = FFmpegFrameRecorder.createDefault(outFile, scaledWidth, scaledHeight);
-            frameRecorder.setAudioChannels(0);
-            frameRecorder.setVideoOption("preset", "ultrafast");
-            frameRecorder.setVideoOption("crf", "28");
-            frameRecorder.setVideoBitrate(500000);
-            frameRecorder.setFormat("mp4");
-            frameRecorder.start();
-
-            Bitmap bmp;
-            Mat mat = new Mat();
-            Frame frame;
-            int counter = 0;
-
-            while (true) {
-                frame = frameGrabber.grabImage();
-                if (frame == null) {
-                    //konec videa
-                    clearBarPath_jni();
-                    break;
-                }
-                Log.i("PROCESSING", "processing frame " + ++counter);
-                bmp = converter.convert(frame);
-                Utils.bitmapToMat(bmp, mat);
-
-                detectAndDraw_jni(mat.getNativeObjAddr());
-
-                Utils.matToBitmap(mat, bmp);
-                frame = converter.convert(bmp);
-                frameRecorder.record(frame);
-            }
-
-            frameRecorder.stop();
-            frameRecorder.release();
-            frameGrabber.stop();
-            frameGrabber.release();
-            inputStream.close();
-
-            processedVid = Uri.fromFile(outFile);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        return processedVid;
-    }
 
     //runtime kontrola permission
     private void checkMyPermission(int permissionCode) {
@@ -324,9 +247,6 @@ public class MainActivity extends AppCompatActivity {
     //inicializace detektoru a trackeru
     public native void init_jni(String cfg, String weights);
 
-    //provede detekci a vykresleni do snimku
-    public native void detectAndDraw_jni(long matAddress);
-
     public native void setDrawBox_jni(boolean drawBox);
 
     public native void setBoxSize_jni(int size);
@@ -338,6 +258,4 @@ public class MainActivity extends AppCompatActivity {
     public native void setBarPathColor_jni(int r, int g, int b);
 
     public native void cleanUp_jni();
-
-    public native void clearBarPath_jni();
 }

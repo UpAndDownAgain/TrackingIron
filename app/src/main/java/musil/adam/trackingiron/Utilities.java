@@ -16,7 +16,7 @@ class Utilities {
                 getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         File myAppDir = new File(dcimDir, "TrackingIron");
 
-        if(!myAppDir.exists() || !myAppDir.mkdirs() ){
+        if(!myAppDir.exists() || myAppDir.mkdirs() ){
             throw new IOException("ERROR CREATING DIRECTORY");
         }
 
