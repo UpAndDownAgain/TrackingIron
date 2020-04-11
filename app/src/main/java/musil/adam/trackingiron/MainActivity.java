@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
 
-                String format = Utilities.getFileExtensionFromUri(videoFileUri);
+                String format = Utilities.getFileExtensionFromUri(getApplicationContext(), videoFileUri);
 
                 final VideoProcessor processor = new VideoProcessor(
                         getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
