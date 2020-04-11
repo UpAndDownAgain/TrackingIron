@@ -50,6 +50,7 @@ class VideoProcessor {
     }
 
     void processVideo() throws IOException {
+        resetTracker_jni();
         InputStream is = resolver.openInputStream(inputVideo);
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(is);
         grabber.setFormat(sourceFormat);
@@ -120,4 +121,5 @@ class VideoProcessor {
 
     private native void detectAndDraw_jni(long matAddress);
     private native void clearBarPath_jni();
+    private native void resetTracker_jni();
 }

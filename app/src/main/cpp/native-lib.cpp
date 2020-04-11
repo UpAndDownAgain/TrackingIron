@@ -31,7 +31,7 @@ Java_musil_adam_trackingiron_MainActivity_init_1jni(JNIEnv *env, jobject thiz, j
     std::string weightsPath = MyUtils::convertJStringToStdString(env, weights);
 
     detektor = std::make_unique<Detektor>(Detektor(cfgPath, weightsPath));
-    tracker = cv::TrackerKCF::create();
+    //tracker = cv::TrackerKCF::create();
 }
 /**
  * metoda k detekci, pokud je validni pouzije tracker
@@ -121,4 +121,9 @@ Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobje
     barPath.clear();
     tracker->clear();
     trackerIsInit = false;
+}extern "C"
+JNIEXPORT void JNICALL
+Java_musil_adam_trackingiron_VideoProcessor_resetTracker_1jni(JNIEnv *env, jobject thiz) {
+    tracker.release();
+    tracker = cv::TrackerKCF::create();
 }
