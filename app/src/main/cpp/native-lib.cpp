@@ -44,25 +44,25 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
                                                                jlong matAddress) {
     //pointer na mat z javy
     auto originalMat = (cv::Mat*)matAddress;
-    cv::Rect2d detection;
-    cv::Mat mat;
+    cv::Rect2d *detection = new cv::Rect2d();
+    cv::Mat *mat = new cv::Mat();
 
     //prevod na 3kanalovou mat
-    cv::cvtColor(*originalMat, mat, CV_BGRA2BGR);
+    cv::cvtColor(*originalMat, *mat, CV_BGRA2BGR);
 
     if(!trackerIsInit){
         __android_log_write(ANDROID_LOG_INFO, "Detector", "Using YOLO Detector");
-        detection = detektor->detectObject(mat);
-        tracker->init(mat, detection);
+        *detection = detektor->detectObject(*mat);
+        tracker->init(*mat, *detection);
         trackerIsInit = true;
     }else{
         __android_log_write(ANDROID_LOG_INFO, "Detector", "Using Tracker");
-        bool ok = tracker->update(mat, detection);
+        bool ok = tracker->update(*mat, *detection);
         //tracker selhal
         if(!ok){
             __android_log_write(ANDROID_LOG_INFO, "Detector", "Tracker Failed");
-            detection = detektor->detectObject(mat);
-            tracker->init(mat, detection);
+            *detection = detektor->detectObject(*mat);
+            tracker->init(*mat, *detection);
         }
     }
     /**
@@ -72,15 +72,16 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
      * jako bod pro drahu povazuji stred ohranicujiciho boxu
      */
     barPath.emplace_back(
-            cv::Point((int)(detection.x + (detection.width/2)),
-                      (int)(detection.y + (detection.height/2))));
+            cv::Point((int)(detection->x + (detection->width/2)),
+                      (int)(detection->y + (detection->height/2))));
 
     if(drawBox){
-        cv::rectangle(*originalMat, detection, boxColor, boxSize);
+        cv::rectangle(*originalMat, *detection, boxColor, boxSize);
     }
 
     MyUtils::drawBarPath(barPath, *originalMat, barPathColor, barPathSize);
-
+    delete mat;
+    delete detection;
 }
 extern "C"
 JNIEXPORT void JNICALL
@@ -118,5 +119,6 @@ Java_musil_adam_trackingiron_MainActivity_cleanUp_1jni(JNIEnv *env, jobject thiz
 JNIEXPORT void JNICALL
 Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobject thiz) {
     barPath.clear();
+    tracker->clear();
     trackerIsInit = false;
 }

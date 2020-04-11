@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -90,6 +92,54 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(selectVideoIntent, SELECT_VIDEO_CODE);
             }
         });
+
+        //nastavi hodnoty v settings na default pri prvnim spusteni, neprepisuje uzivatelske nastaveni
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        //nacteni nastaveni z Shared Preferences
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        //vyklresleni ohranicujiciho boxu
+        boolean drawBox = sharedPreferences.getBoolean(
+                SettingsActivity.PREFERENCE_DRAWBOX, false);
+
+        int boxLineSize = Integer.parseInt(
+                sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE ,"1"));
+
+        int pathLineSize = Integer.parseInt(
+                sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
+
+        String boxColor = sharedPreferences.getString(
+                SettingsActivity.PREFERENCE_BOX_COLOR, "red");
+        String pathColor = sharedPreferences.getString(
+                SettingsActivity.PREFERENCE_PATH_COLOR, "red");
+
+        setDrawBox_jni(drawBox);
+        setBoxSize_jni(boxLineSize);
+        setBarPathSize_jni(pathLineSize);
+
+        switch (boxColor.toLowerCase()){
+            case "red":
+                setBoxColor_jni(255,0,0);
+                break;
+            case "green":
+                setBoxColor_jni(0,255,0);
+                break;
+            case "blue":
+                setBoxColor_jni(0,0,255);
+                break;
+        }
+        switch (pathColor.toLowerCase()){
+            case "red":
+                setBarPathColor_jni(255,0,0);
+                break;
+            case "green":
+                setBarPathColor_jni(0,255,0);
+                break;
+            case "blue":
+                setBarPathColor_jni(0,0,255);
+                break;
+        }
 
     }
 
