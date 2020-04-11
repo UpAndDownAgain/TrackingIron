@@ -119,5 +119,6 @@ Java_musil_adam_trackingiron_MainActivity_cleanUp_1jni(JNIEnv *env, jobject thiz
 JNIEXPORT void JNICALL
 Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobject thiz) {
     barPath.clear();
+    tracker->clear();
     trackerIsInit = false;
 }

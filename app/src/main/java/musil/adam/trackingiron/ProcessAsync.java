@@ -24,7 +24,7 @@ public class ProcessAsync extends AsyncTask<Void,Void,Void> {
 
     @Override
     protected void onPreExecute() {
-        System.gc();
+
         progressBarRef.get().setVisibility(View.VISIBLE);
     }
 

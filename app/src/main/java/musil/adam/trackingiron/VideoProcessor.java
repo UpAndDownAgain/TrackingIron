@@ -75,6 +75,7 @@ class VideoProcessor {
         File out = new File(outputDir, Calendar.getInstance().getTimeInMillis() + ".mp4");
         recorder = FFmpegFrameRecorder.createDefault(out, scaledWidth, scaledHeight);
         recorder.setAudioChannels(0);
+        recorder.setFrameRate(grabber.getFrameRate());
         recorder.setVideoOption("preset", "ultrafast");
         recorder.setVideoOption("crf", "28");
         recorder.setVideoBitrate(500000);
