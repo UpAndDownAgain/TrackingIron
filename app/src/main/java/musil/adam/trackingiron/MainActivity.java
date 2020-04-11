@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
         checkMyPermission(MY_READ_PERMISSION_CODE);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         try {
             //rozbali yolo cfg a weights, inicializuje tridy v native
             loadResources();
@@ -87,6 +93,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.action_settings){
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -100,8 +123,10 @@ public class MainActivity extends AppCompatActivity {
                 File directory = Utilities.getMyAppDirectory();
                 //vytvoreni noveho video souboru se zakreslenou detekci
 
+                String format = Utilities.getFileExtensionFromUri(getApplicationContext(), videoFileUri);
+
                 final VideoProcessor processor = new VideoProcessor(
-                        getContentResolver(), videoFileUri, directory, "mp4", SCALE_RESOLUTION);
+                        getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
 
                 ProcessAsync processAsync = new ProcessAsync(processor, spinner, getApplicationContext());
                 processAsync.execute();
