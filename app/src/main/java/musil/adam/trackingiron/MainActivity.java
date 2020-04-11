@@ -38,16 +38,16 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    final static int MY_READ_PERMISSION_CODE  = 10001;
-    final static int MY_WRITE_PERMISSION_CODE = 10002;
-    final static int SELECT_VIDEO_CODE        = 20001;
-    final static int SCALE_RESOLUTION         = 640;
-    static String PACKAGE_NAME;
+    private final static int MY_READ_PERMISSION_CODE  = 10001;
+    private final static int MY_WRITE_PERMISSION_CODE = 10002;
+    private final static int SELECT_VIDEO_CODE        = 20001;
+    private final static int SCALE_RESOLUTION         = 640;
+    private static String PACKAGE_NAME;
 
-    FloatingActionButton addButton;
+    private FloatingActionButton addButton;
     private ProgressBar spinner;
 
-    Uri videoFileUri;
+    private Uri videoFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

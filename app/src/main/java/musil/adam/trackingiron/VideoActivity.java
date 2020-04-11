@@ -1,7 +1,6 @@
 package musil.adam.trackingiron;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,8 +10,8 @@ import android.widget.VideoView;
 
 public class VideoActivity extends AppCompatActivity {
 
-    VideoView videoView;
-    MediaController controller;
+    private VideoView videoView;
+    private MediaController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
