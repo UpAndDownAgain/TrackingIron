@@ -8,32 +8,36 @@
         android:summary="Draw bounding box around detected object"/>
 
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="Medium"
         android:entries="@array/line_size_labels"
         android:entryValues="@array/line_size_values"
         android:key="BoxLineSize"
-        android:title="Box line size" />
+        android:title="Box line size"
+        android:summary="%s"/>
 
     <ListPreference
         android:defaultValue="Red"
         android:entries="@array/colors"
         android:entryValues="@array/colors"
         android:key="BoxLineColor"
-        android:title="Box line color" />
+        android:title="Box line color"
+        android:summary="%s"/>
 
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="Medium"
         android:entries="@array/line_size_labels"
         android:entryValues="@array/line_size_values"
         android:key="PathLineSize"
-        android:title="Path line size" />
+        android:title="Path line size"
+        android:summary="%s"/>
 
     <ListPreference
         android:defaultValue="Red"
         android:entries="@array/colors"
         android:entryValues="@array/colors"
         android:key="PathLineColor"
-        android:title="Box line color" />
+        android:title="Path line color"
+        android:summary="%s"/>
 
 
 </PreferenceScreen>
