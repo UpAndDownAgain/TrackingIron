@@ -39,6 +39,7 @@ public class ProcessAsync extends AsyncTask<Void,Void,Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
+        //System.gc();
         progressBarRef.get().setVisibility(View.GONE);
         final Uri processedVid = videoProcessRef.get().getProcessedVid();
         Intent videoIntent = new Intent(contextRef.get().getApplicationContext(), VideoActivity.class);

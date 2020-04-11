@@ -6,4 +6,34 @@
         android:key="drawBoxSwitch"
         android:title="Draw Box"
         android:summary="Draw bounding box around detected object"/>
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/line_size_labels"
+        android:entryValues="@array/line_size_values"
+        android:key="BoxLineSize"
+        android:title="Box line size" />
+
+    <ListPreference
+        android:defaultValue="Red"
+        android:entries="@array/colors"
+        android:entryValues="@array/colors"
+        android:key="BoxLineColor"
+        android:title="Box line color" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/line_size_labels"
+        android:entryValues="@array/line_size_values"
+        android:key="PathLineSize"
+        android:title="Path line size" />
+
+    <ListPreference
+        android:defaultValue="Red"
+        android:entries="@array/colors"
+        android:entryValues="@array/colors"
+        android:key="PathLineColor"
+        android:title="Box line color" />
+
+
 </PreferenceScreen>
