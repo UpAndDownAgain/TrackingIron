@@ -20,6 +20,11 @@ android {
                 arguments "-DOpenCV_DIR=" + opencvsdk + "/sdk/native"
             }
         }
+
+        compileOptions {
+            sourceCompatibility = 1.8
+            targetCompatibility = 1.8
+        }
     }
 
     buildTypes {
