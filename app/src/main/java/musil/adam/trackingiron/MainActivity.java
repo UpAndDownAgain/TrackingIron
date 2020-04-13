@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,10 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int SCALE_RESOLUTION         = 640;
     private static String PACKAGE_NAME;
 
-    private FloatingActionButton addButton;
     private ProgressBar spinner;
 
-    private Uri videoFileUri;
     private VideoViewModel videoViewModel;
 
     @Override
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         spinner.setVisibility(View.GONE);
 
         //FAB na pridani pridani noveho videa
-        addButton = findViewById(R.id.fab);
+        FloatingActionButton addButton = findViewById(R.id.fab);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,6 +160,35 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
+        //pridani dotykove funkcionality
+        ItemTouchHelper helper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    //smazat zaznam pri odsunuti
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
+                                         int direction) {
+                        int position = viewHolder.getAdapterPosition();
+                        Video video = adapter.getVideoAtPosition(position);
+                        Toast.makeText(MainActivity.this, "Deleting " + video.getName(),
+                                Toast.LENGTH_LONG).show();
+
+                        videoViewModel.delete(video);
+                        video.getVideoFile().delete();
+                    }
+                });
+        //pripojeni touch helperu k recycler view
+        helper.attachToRecyclerView(recyclerView);
+
+
     }
 
     @Override
@@ -186,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == SELECT_VIDEO_CODE && data != null) {
-            videoFileUri = data.getData();
+            Uri videoFileUri = data.getData();
 
             try {
                 //slozka ulozeni videa

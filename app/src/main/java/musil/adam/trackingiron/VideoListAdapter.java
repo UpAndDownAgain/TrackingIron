@@ -59,5 +59,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         notifyDataSetChanged();
     }
 
+    public Video getVideoAtPosition(int position){
+        return vids.get(position);
+    }
+
 
 }

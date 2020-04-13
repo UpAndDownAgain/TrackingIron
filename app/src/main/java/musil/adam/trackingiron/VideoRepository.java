@@ -25,4 +25,8 @@ public class VideoRepository {
         VideoRoomDatabase.databaseWriteExecutor.execute(()->{videoDao.insert(video);});
     }
 
+    void delete(Video video){
+        VideoRoomDatabase.databaseWriteExecutor.execute(()->videoDao.delete(video));
+    }
+
 }

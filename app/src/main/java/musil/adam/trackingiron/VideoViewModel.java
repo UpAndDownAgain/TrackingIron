@@ -29,4 +29,8 @@ public class VideoViewModel extends AndroidViewModel {
     public void insert(Video vid){
         repository.insert(vid);
     }
+
+    public void delete(Video vid){
+        repository.delete(vid);
+    }
 }
