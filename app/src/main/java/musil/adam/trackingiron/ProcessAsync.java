@@ -10,11 +10,11 @@ import android.widget.ProgressBar;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-public class ProcessAsync extends AsyncTask<Void,Void,Void> {
+class ProcessAsync extends AsyncTask<Void,Void,Void> {
 
-    private WeakReference<ProgressBar> progressBarRef;
-    private WeakReference<VideoProcessor> videoProcessRef;
-    private WeakReference<Context> contextRef;
+    final private WeakReference<ProgressBar> progressBarRef;
+    final private WeakReference<VideoProcessor> videoProcessRef;
+    final private WeakReference<Context> contextRef;
 
     ProcessAsync(VideoProcessor vp, ProgressBar pb, Context context){
         videoProcessRef = new WeakReference<>(vp);

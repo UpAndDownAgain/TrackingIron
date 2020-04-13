@@ -3,46 +3,36 @@ package musil.adam.trackingiron;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.renderscript.ScriptGroup;
 import android.util.Log;
 
 import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.FrameRecorder;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.EventListener;
-import java.util.Set;
-import java.util.concurrent.Executor;
 
 import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
 class VideoProcessor {
 
-    private Uri inputVideo;
+    final private Uri inputVideo;
     private Uri outputVideo;
-    private File outputDir;
-    private ContentResolver resolver;
+    final private File outputDir;
+    final private ContentResolver resolver;
 
-    private AndroidFrameConverter converter;
-    private FFmpegFrameRecorder recorder;
-    private FFmpegFrameGrabber grabber;
+    final private AndroidFrameConverter converter;
 
 
-    private String sourceFormat;
-    private double scale;
+    final private String sourceFormat;
     private int scaledWidth;
     private int scaledHeight;
-    private int scaleTo;
+    final private int scaleTo;
 
 
     VideoProcessor(ContentResolver resolver, Uri inputVideo, File directory, String format, int scaleTo){
@@ -60,8 +50,9 @@ class VideoProcessor {
     }
 
     void processVideo() throws IOException {
+        resetTracker_jni();
         InputStream is = resolver.openInputStream(inputVideo);
-        grabber = new FFmpegFrameGrabber(is);
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(is);
         grabber.setFormat(sourceFormat);
         grabber.start();
 
@@ -73,7 +64,7 @@ class VideoProcessor {
         grabber.setImageScalingFlags(SWS_AREA);
 
         File out = new File(outputDir, Calendar.getInstance().getTimeInMillis() + ".mp4");
-        recorder = FFmpegFrameRecorder.createDefault(out, scaledWidth, scaledHeight);
+        FFmpegFrameRecorder recorder = FFmpegFrameRecorder.createDefault(out, scaledWidth, scaledHeight);
         recorder.setAudioChannels(0);
         recorder.setFrameRate(grabber.getFrameRate());
         recorder.setVideoOption("preset", "ultrafast");
@@ -115,6 +106,7 @@ class VideoProcessor {
     }
 
     private void scaleResolutions(int sourceWidth, int sourceHeight){
+        double scale;
         if (sourceHeight > sourceWidth) {
             //portraid mode
             scale = (double) scaleTo / (double) sourceHeight;
@@ -129,4 +121,5 @@ class VideoProcessor {
 
     private native void detectAndDraw_jni(long matAddress);
     private native void clearBarPath_jni();
+    private native void resetTracker_jni();
 }
