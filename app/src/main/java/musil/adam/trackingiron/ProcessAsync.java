@@ -2,12 +2,10 @@ package musil.adam.trackingiron;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 

@@ -24,4 +24,7 @@ public interface VideoDao {
     @Query("SELECT * FROM video_table ORDER BY name ASC")
     LiveData<List<Video>> getAllVideos();
 
+    @Query("UPDATE video_table SET name = :newName WHERE name= :oldName")
+    void changeName(String newName, String oldName);
+
 }
