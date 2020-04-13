@@ -24,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar spinner;
 
     private Uri videoFileUri;
+    private VideoViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
         final VideoListAdapter adapter = new VideoListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+        videoViewModel.getAllVids().observe(this, new Observer<List<Video>>() {
+            @Override
+            public void onChanged(List<Video> videos) {
+                adapter.setVids(videos);
+            }
+        });
 
         try {
             //rozbali yolo cfg a weights, inicializuje tridy v native
@@ -110,21 +122,21 @@ public class MainActivity extends AppCompatActivity {
         //vyklresleni ohranicujiciho boxu
         boolean drawBox = sharedPreferences.getBoolean(
                 SettingsActivity.PREFERENCE_DRAWBOX, false);
-
+        /*
         int boxLineSize = Integer.parseInt(
                 sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE ,"1"));
 
         int pathLineSize = Integer.parseInt(
                 sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
-
+        */
         String boxColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_BOX_COLOR, "red");
         String pathColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_PATH_COLOR, "red");
 
         setDrawBox_jni(drawBox);
-        setBoxSize_jni(boxLineSize);
-        setBarPathSize_jni(pathLineSize);
+        //setBoxSize_jni(boxLineSize);
+        //setBarPathSize_jni(pathLineSize);
 
         switch (boxColor.toLowerCase()){
             case "red":
@@ -186,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 final VideoProcessor processor = new VideoProcessor(
                         getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
 
-                ProcessAsync processAsync = new ProcessAsync(processor, spinner, getApplicationContext());
+                ProcessAsync processAsync = new ProcessAsync(processor, spinner, videoViewModel, getApplicationContext());
                 processAsync.execute();
 
 
