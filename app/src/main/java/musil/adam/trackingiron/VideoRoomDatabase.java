@@ -2,6 +2,7 @@ package musil.adam.trackingiron;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -31,3 +32,4 @@ public abstract class VideoRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 }
+
