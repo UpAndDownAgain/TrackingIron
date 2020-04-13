@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,34 +17,45 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     class VideoViewHolder extends RecyclerView.ViewHolder{
         private final TextView videoItemView;
 
-
-        public VideoViewHolder(@NonNull View itemView) {
+        VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoItemView = itemView.findViewById(R.id.textView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
         }
     }
 
+
+
     private final LayoutInflater inflater;
     private List<Video> vids;
+    private static ClickListener clickListener;
 
     VideoListAdapter(Context context){
         inflater = LayoutInflater.from(context);
     }
 
+    @NonNull
     @Override
-    public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent,@NonNull int viewType){
         View itemView = inflater.inflate(R.layout.recycler_item, parent, false);
         return new VideoViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(VideoViewHolder holder, int position){
+    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position){
         if(vids != null){
             Video current = vids.get(position);
             holder.videoItemView.setText(current.getName());
         }else{
-            holder.videoItemView.setText("No Vid No did");
+            holder.videoItemView.setText("");
         }
+
+
     }
 
     @Override
@@ -59,9 +71,16 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         notifyDataSetChanged();
     }
 
-    public Video getVideoAtPosition(int position){
+    Video getVideoAtPosition(int position){
         return vids.get(position);
     }
 
+    void setOnItemClickListener(ClickListener clickListener) {
+        VideoListAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(View v, int position);
+    }
 
 }

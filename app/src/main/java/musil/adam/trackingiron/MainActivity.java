@@ -8,12 +8,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -121,21 +122,27 @@ public class MainActivity extends AppCompatActivity {
         //vyklresleni ohranicujiciho boxu
         boolean drawBox = sharedPreferences.getBoolean(
                 SettingsActivity.PREFERENCE_DRAWBOX, false);
-        /*
-        int boxLineSize = Integer.parseInt(
-                sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE ,"1"));
 
-        int pathLineSize = Integer.parseInt(
-                sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
-        */
+        int boxLineSize;
+        int pathLineSize;
+        try {
+            boxLineSize = Integer.parseInt(
+                    sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE, "1"));
+
+            pathLineSize = Integer.parseInt(
+                    sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
+        }catch (Exception ex){
+            boxLineSize = 1;
+            pathLineSize = 1;
+        }
         String boxColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_BOX_COLOR, "red");
         String pathColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_PATH_COLOR, "red");
 
         setDrawBox_jni(drawBox);
-        //setBoxSize_jni(boxLineSize);
-        //setBarPathSize_jni(pathLineSize);
+        setBoxSize_jni(boxLineSize);
+        setBarPathSize_jni(pathLineSize);
 
         switch (boxColor.toLowerCase()){
             case "red":
@@ -160,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        //pridani dotykove funkcionality
+        //pridani dotykove funkcionality pro smazani
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -188,8 +195,17 @@ public class MainActivity extends AppCompatActivity {
         //pripojeni touch helperu k recycler view
         helper.attachToRecyclerView(recyclerView);
 
+        //prehrani videa v nove aktivite pri doteku
+        adapter.setOnItemClickListener(new VideoListAdapter.ClickListener(){
+            @Override
+            public void onItemClick(View v, int position){
+                Video video = adapter.getVideoAtPosition(position);
+                launchPlayVideoActivity(video);
+            }
 
+        });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -247,13 +263,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * provedeni detekci na videu
-     * nacte jednotlive snimky ze souboru preda je do native kde probehne detekce a vykresleni drahy
-     * vysledek ulozi do noveho video souboru
-     *
-     */
-
+    public void launchPlayVideoActivity(Video video){
+        Intent intent = new Intent(this, VideoActivity.class);
+        intent.setData(video.getVideoUri());
+        startActivity(intent);
+    }
 
     //runtime kontrola permission
     private void checkMyPermission(int permissionCode) {

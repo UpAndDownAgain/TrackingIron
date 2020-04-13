@@ -28,5 +28,4 @@ public class VideoRepository {
     void delete(Video video){
         VideoRoomDatabase.databaseWriteExecutor.execute(()->videoDao.delete(video));
     }
-
 }

@@ -2,16 +2,14 @@ package musil.adam.trackingiron;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Video.class}, version = 1)
+@Database(entities = {Video.class}, version = 1, exportSchema = false)
 public abstract class VideoRoomDatabase extends RoomDatabase {
 
     public abstract VideoDao videoDao();
