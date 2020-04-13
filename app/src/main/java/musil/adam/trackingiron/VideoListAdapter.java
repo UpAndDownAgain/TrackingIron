@@ -17,15 +17,19 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         private final TextView videoItemView;
 
 
-        public VideoViewHolder(@NonNull View itemView) {
+        VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoItemView = itemView.findViewById(R.id.textView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
         }
     }
 
-    public interface ClickListener{
-        void onItemClick(View v, int position);
-    }
+
 
     private final LayoutInflater inflater;
     private List<Video> vids;
@@ -64,12 +68,16 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         notifyDataSetChanged();
     }
 
-    public Video getVideoAtPosition(int position){
+    Video getVideoAtPosition(int position){
         return vids.get(position);
     }
 
-    public void setOnItemClickListener(ClickListener clickListener){
+    void setOnItemClickListener(ClickListener clickListener) {
         VideoListAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(View v, int position);
     }
 
 }

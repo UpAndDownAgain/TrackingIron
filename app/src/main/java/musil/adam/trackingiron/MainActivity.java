@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        //pridani dotykove funkcionality
+        //pridani dotykove funkcionality pro smazani
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         //pripojeni touch helperu k recycler view
         helper.attachToRecyclerView(recyclerView);
 
+        //prehrani videa v nove aktivite pri doteku
         adapter.setOnItemClickListener(new VideoListAdapter.ClickListener(){
             @Override
             public void onItemClick(View v, int position){
