@@ -32,7 +32,12 @@ public class Video {
         this.name = file.getName();
         this.path = file.getPath();
     }
-
+    public Video(String name, String path){
+        this.name = name;
+        this.path = path;
+        this.videoFile = new File(path);
+        this.videoUri = Uri.fromFile(videoFile);
+    }
 
     //setters
     public void setName(@NonNull String name) {
