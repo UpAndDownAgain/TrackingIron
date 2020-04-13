@@ -22,7 +22,7 @@ import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 class VideoProcessor {
 
     final private Uri inputVideo;
-    private Uri outputVideo;
+    private File outputVideo;
     final private File outputDir;
     final private ContentResolver resolver;
 
@@ -45,7 +45,7 @@ class VideoProcessor {
         this.outputDir = directory;
     }
 
-    Uri getProcessedVid(){
+    File getProcessedVid(){
         return outputVideo;
     }
 
@@ -102,7 +102,7 @@ class VideoProcessor {
             is.close();
         }
 
-        outputVideo = Uri.fromFile(out);
+        outputVideo = out;
     }
 
     private void scaleResolutions(int sourceWidth, int sourceHeight){

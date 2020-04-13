@@ -24,13 +24,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,10 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private final static int SCALE_RESOLUTION         = 640;
     private static String PACKAGE_NAME;
 
-    private FloatingActionButton addButton;
     private ProgressBar spinner;
 
-    private Uri videoFileUri;
+    private VideoViewModel videoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,19 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final VideoListAdapter adapter = new VideoListAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+        videoViewModel.getAllVids().observe(this, new Observer<List<Video>>() {
+            @Override
+            public void onChanged(List<Video> videos) {
+                adapter.setVids(videos);
+            }
+        });
 
         try {
             //rozbali yolo cfg a weights, inicializuje tridy v native
@@ -83,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         spinner.setVisibility(View.GONE);
 
         //FAB na pridani pridani noveho videa
-        addButton = findViewById(R.id.fab);
+        FloatingActionButton addButton = findViewById(R.id.fab);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,21 +121,21 @@ public class MainActivity extends AppCompatActivity {
         //vyklresleni ohranicujiciho boxu
         boolean drawBox = sharedPreferences.getBoolean(
                 SettingsActivity.PREFERENCE_DRAWBOX, false);
-
+        /*
         int boxLineSize = Integer.parseInt(
                 sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE ,"1"));
 
         int pathLineSize = Integer.parseInt(
                 sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
-
+        */
         String boxColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_BOX_COLOR, "red");
         String pathColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_PATH_COLOR, "red");
 
         setDrawBox_jni(drawBox);
-        setBoxSize_jni(boxLineSize);
-        setBarPathSize_jni(pathLineSize);
+        //setBoxSize_jni(boxLineSize);
+        //setBarPathSize_jni(pathLineSize);
 
         switch (boxColor.toLowerCase()){
             case "red":
@@ -141,6 +159,35 @@ public class MainActivity extends AppCompatActivity {
                 setBarPathColor_jni(0,0,255);
                 break;
         }
+
+        //pridani dotykove funkcionality
+        ItemTouchHelper helper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    //smazat zaznam pri odsunuti
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
+                                         int direction) {
+                        int position = viewHolder.getAdapterPosition();
+                        Video video = adapter.getVideoAtPosition(position);
+                        Toast.makeText(MainActivity.this, "Deleting " + video.getName(),
+                                Toast.LENGTH_LONG).show();
+
+                        videoViewModel.delete(video);
+                        video.getVideoFile().delete();
+                    }
+                });
+        //pripojeni touch helperu k recycler view
+        helper.attachToRecyclerView(recyclerView);
+
 
     }
 
@@ -167,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == SELECT_VIDEO_CODE && data != null) {
-            videoFileUri = data.getData();
+            Uri videoFileUri = data.getData();
 
             try {
                 //slozka ulozeni videa
@@ -179,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 final VideoProcessor processor = new VideoProcessor(
                         getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
 
-                ProcessAsync processAsync = new ProcessAsync(processor, spinner, getApplicationContext());
+                ProcessAsync processAsync = new ProcessAsync(processor, spinner, videoViewModel, getApplicationContext());
                 processAsync.execute();
 
 
