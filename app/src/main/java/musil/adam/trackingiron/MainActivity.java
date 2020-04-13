@@ -188,7 +188,13 @@ public class MainActivity extends AppCompatActivity {
         //pripojeni touch helperu k recycler view
         helper.attachToRecyclerView(recyclerView);
 
-
+        adapter.setOnItemClickListener(new VideoListAdapter.ClickListener(){
+            @Override
+            public void onItemClick(View v, int position){
+                Video video = adapter.getVideoAtPosition(position);
+                launchPlayVideoActivity(video);
+            }
+        });
     }
 
     @Override
@@ -247,13 +253,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * provedeni detekci na videu
-     * nacte jednotlive snimky ze souboru preda je do native kde probehne detekce a vykresleni drahy
-     * vysledek ulozi do noveho video souboru
-     *
-     */
-
+    public void launchPlayVideoActivity(Video video){
+        Intent intent = new Intent(this, VideoActivity.class);
+        intent.setData(video.getVideoUri());
+        startActivity(intent);
+    }
 
     //runtime kontrola permission
     private void checkMyPermission(int permissionCode) {

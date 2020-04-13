@@ -23,8 +23,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         }
     }
 
+    public interface ClickListener{
+        void onItemClick(View v, int position);
+    }
+
     private final LayoutInflater inflater;
     private List<Video> vids;
+    private static ClickListener clickListener;
 
     VideoListAdapter(Context context){
         inflater = LayoutInflater.from(context);
@@ -63,5 +68,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         return vids.get(position);
     }
 
+    public void setOnItemClickListener(ClickListener clickListener){
+        VideoListAdapter.clickListener = clickListener;
+    }
 
 }
