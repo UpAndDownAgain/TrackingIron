@@ -121,21 +121,27 @@ public class MainActivity extends AppCompatActivity {
         //vyklresleni ohranicujiciho boxu
         boolean drawBox = sharedPreferences.getBoolean(
                 SettingsActivity.PREFERENCE_DRAWBOX, false);
-        /*
-        int boxLineSize = Integer.parseInt(
-                sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE ,"1"));
 
-        int pathLineSize = Integer.parseInt(
-                sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
-        */
+        int boxLineSize;
+        int pathLineSize;
+        try {
+            boxLineSize = Integer.parseInt(
+                    sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE, "1"));
+
+            pathLineSize = Integer.parseInt(
+                    sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
+        }catch (Exception ex){
+            boxLineSize = 1;
+            pathLineSize = 1;
+        }
         String boxColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_BOX_COLOR, "red");
         String pathColor = sharedPreferences.getString(
                 SettingsActivity.PREFERENCE_PATH_COLOR, "red");
 
         setDrawBox_jni(drawBox);
-        //setBoxSize_jni(boxLineSize);
-        //setBarPathSize_jni(pathLineSize);
+        setBoxSize_jni(boxLineSize);
+        setBarPathSize_jni(pathLineSize);
 
         switch (boxColor.toLowerCase()){
             case "red":
