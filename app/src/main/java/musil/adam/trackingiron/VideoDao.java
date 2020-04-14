@@ -9,6 +9,10 @@ import androidx.room.Query;
 
 import java.util.List;
 
+/**
+ * interface slouzici k obhospodarovani db
+ */
+
 @Dao
 public interface VideoDao {
 
@@ -24,7 +28,7 @@ public interface VideoDao {
     @Query("SELECT * FROM video_table ORDER BY name ASC")
     LiveData<List<Video>> getAllVideos();
 
-    @Query("UPDATE video_table SET displayName = :newName WHERE name= :name")
+    @Query("UPDATE video_table SET display_name = :newName WHERE name= :name")
     void changeName(String newName, String name);
 
 }

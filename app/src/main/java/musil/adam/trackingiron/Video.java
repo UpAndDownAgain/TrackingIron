@@ -10,6 +10,10 @@ import androidx.room.PrimaryKey;
 
 import java.io.File;
 
+/**
+ * Zakladni trida "obalujici" video, slouzi jako vzor pro vytvoreni db
+ */
+
 @Entity(tableName = "video_table")
 public class Video {
 
@@ -17,7 +21,11 @@ public class Video {
     @NonNull
     @ColumnInfo(name = "name")
     private String name;
+
+    @ColumnInfo(name = "display_name")
     private String displayName;
+
+    @ColumnInfo(name = "path")
     private String path;
 
     @Ignore

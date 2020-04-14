@@ -26,15 +26,15 @@ public class VideoViewModel extends AndroidViewModel {
         return allVids;
     }
 
-    public void insert(Video vid){
+    void insert(Video vid){
         repository.insert(vid);
     }
 
-    public void delete(Video vid){
+    void delete(Video vid){
         repository.delete(vid);
     }
 
-    public void changeName(String newName, String name){
+    void changeName(String newName, String name){
         repository.changeName(newName, name);
     }
 }

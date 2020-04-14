@@ -11,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * adapter videa pro zobrazeni v recyclerview
+ */
+
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
     class VideoViewHolder extends RecyclerView.ViewHolder{
@@ -19,12 +23,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoItemView = itemView.findViewById(R.id.textView);
+            //normalni stisknuti
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     clickListener.onItemClick(v, getAdapterPosition());
                 }
             });
+            //dlouhe stisknuti
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -34,8 +40,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             });
         }
     }
-
-
 
     private final LayoutInflater inflater;
     private List<Video> vids;
@@ -48,7 +52,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     @NonNull
     @Override
-    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent,@NonNull int viewType){
+    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         View itemView = inflater.inflate(R.layout.recycler_item, parent, false);
         return new VideoViewHolder(itemView);
     }

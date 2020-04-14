@@ -19,6 +19,10 @@ import java.util.Calendar;
 
 import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
+/**
+ * trida ke zpracovavani videa
+ */
+
 class VideoProcessor {
 
     final private Uri inputVideo;
@@ -27,7 +31,6 @@ class VideoProcessor {
     final private ContentResolver resolver;
 
     final private AndroidFrameConverter converter;
-
 
     final private String sourceFormat;
     private int scaledWidth;
@@ -50,23 +53,32 @@ class VideoProcessor {
     }
 
     void processVideo() throws IOException {
+        //resetoveni trackeru v jni aby byl v korektnim stavu
         resetTracker_jni();
+
+        //input stream pro inicializaci framegrabberu
         InputStream is = resolver.openInputStream(inputVideo);
+
+        //inicializace a spusteni framegrabberu
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(is);
         grabber.setFormat(sourceFormat);
         grabber.start();
 
+        //skalovani videa aby se nacitalo v nizsim rozliseni -> rychleji
         scaleResolutions(grabber.getImageWidth(), grabber.getImageHeight());
-
         grabber.setImageHeight(scaledHeight);
         grabber.setImageWidth(scaledWidth);
         //viz https://github.com/bytedeco/javacpp-presets/blob/master/ffmpeg/src/gen/java/org/bytedeco/ffmpeg/global/swscale.java#L76-L86
         grabber.setImageScalingFlags(SWS_AREA);
 
+        //soubor pro zapis noveho videa
         File out = new File(outputDir, Calendar.getInstance().getTimeInMillis() + ".mp4");
+
+        //inicializace a spusteni framerecorderu, musi probehnout po spusteni framegrabberu
         FFmpegFrameRecorder recorder = FFmpegFrameRecorder.createDefault(out, scaledWidth, scaledHeight);
-        recorder.setAudioChannels(0);
-        recorder.setFrameRate(grabber.getFrameRate());
+        recorder.setAudioChannels(0); //ignorujeme zvuk
+        recorder.setFrameRate(grabber.getFrameRate()); //stejny fps jako origo video
+        //nastaveni video kvality, cim horsi tim rychlejsi
         recorder.setVideoOption("preset", "ultrafast");
         recorder.setVideoOption("crf", "28");
         recorder.setVideoBitrate(500000);
@@ -81,6 +93,7 @@ class VideoProcessor {
         while(true){
             frame = grabber.grabImage();
             if(frame == null){
+                //konec video souboru
                 clearBarPath_jni();
                 break;
             }
@@ -88,12 +101,15 @@ class VideoProcessor {
             bmp = converter.convert(frame);
             Utils.bitmapToMat(bmp, mat);
 
+            //provedeni detekce a zakresleni vysledku do snimku
             detectAndDraw_jni(mat.getNativeObjAddr());
 
             Utils.matToBitmap(mat, bmp);
             frame = converter.convert(bmp);
             recorder.record(frame);
         }
+
+        //uklid
         recorder.stop();
         recorder.release();
         grabber.stop();
@@ -118,7 +134,7 @@ class VideoProcessor {
         scaledWidth = (int)(sourceWidth * scale);
         scaledHeight = (int)(sourceHeight * scale);
     }
-
+    //nativni metody
     private native void detectAndDraw_jni(long matAddress);
     private native void clearBarPath_jni();
     private native void resetTracker_jni();

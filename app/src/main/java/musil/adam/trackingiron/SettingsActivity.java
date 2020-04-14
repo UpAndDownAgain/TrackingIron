@@ -4,6 +4,11 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Aktivita pro uzivatelske nastaveni
+ * polozky jsou v res/xml/preferences.xml
+ * hodnoty res/values/array.xml
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String PREFERENCE_DRAWBOX = "drawBoxSwitch";
