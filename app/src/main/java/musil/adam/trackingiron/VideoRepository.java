@@ -28,4 +28,8 @@ public class VideoRepository {
     void delete(Video video){
         VideoRoomDatabase.databaseWriteExecutor.execute(()->videoDao.delete(video));
     }
+
+    void changeName(String newName, String name){
+        VideoRoomDatabase.databaseWriteExecutor.execute(()->videoDao.changeName(newName, name));
+    }
 }

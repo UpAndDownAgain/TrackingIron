@@ -17,7 +17,7 @@ public class Video {
     @NonNull
     @ColumnInfo(name = "name")
     private String name;
-
+    private String displayName;
     private String path;
 
     @Ignore
@@ -31,12 +31,14 @@ public class Video {
         this.videoUri = Uri.fromFile(file);
         this.name = file.getName();
         this.path = file.getPath();
+        this.displayName = this.name;
     }
-    public Video(String name, String path){
+    public Video(@NonNull String name, String path, String displayName){
         this.name = name;
         this.path = path;
         this.videoFile = new File(path);
         this.videoUri = Uri.fromFile(videoFile);
+        this.displayName = displayName;
     }
 
     //setters
@@ -55,6 +57,10 @@ public class Video {
     public void setVideoFile(File videoFile) {
         this.videoFile = videoFile;
     }
+
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
     //getters
     @NonNull
     public String getName() {
@@ -71,6 +77,10 @@ public class Video {
 
     public File getVideoFile() {
         return videoFile;
+    }
+
+    public String getDisplayName(){
+        return displayName;
     }
 
 
