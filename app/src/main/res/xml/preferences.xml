@@ -8,7 +8,7 @@
         android:summary="Draw bounding box around detected object"/>
 
     <ListPreference
-        android:defaultValue="Medium"
+        android:defaultValue="2"
         android:entries="@array/line_size_labels"
         android:entryValues="@array/line_size_values"
         android:key="BoxLineSize"
@@ -24,7 +24,7 @@
         android:summary="%s"/>
 
     <ListPreference
-        android:defaultValue="Medium"
+        android:defaultValue="2"
         android:entries="@array/line_size_labels"
         android:entryValues="@array/line_size_values"
         android:key="PathLineSize"

@@ -51,4 +51,5 @@ class ProcessAsync extends AsyncTask<Void,Void,Void> {
         videoIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         contextRef.get().startActivity(videoIntent);
     }
+
 }

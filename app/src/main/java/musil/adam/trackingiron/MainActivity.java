@@ -64,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
         PACKAGE_NAME = getPackageName();
 
+        //kontrola povoleni ke cteni uloziste
         checkMyPermission(MY_READ_PERMISSION_CODE);
 
+        //
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -120,53 +122,9 @@ public class MainActivity extends AppCompatActivity {
         //nacteni nastaveni z Shared Preferences
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-        //vyklresleni ohranicujiciho boxu
-        boolean drawBox = sharedPreferences.getBoolean(
-                SettingsActivity.PREFERENCE_DRAWBOX, false);
 
-        int boxLineSize;
-        int pathLineSize;
-        try {
-            boxLineSize = Integer.parseInt(
-                    sharedPreferences.getString(SettingsActivity.PREFERENCE_BOX_SIZE, "1"));
-
-            pathLineSize = Integer.parseInt(
-                    sharedPreferences.getString(SettingsActivity.PREFERENCE_PATH_SIZE, "1"));
-        }catch (Exception ex){
-            boxLineSize = 1;
-            pathLineSize = 1;
-        }
-        String boxColor = sharedPreferences.getString(
-                SettingsActivity.PREFERENCE_BOX_COLOR, "red");
-        String pathColor = sharedPreferences.getString(
-                SettingsActivity.PREFERENCE_PATH_COLOR, "red");
-
-        setDrawBox_jni(drawBox);
-        setBoxSize_jni(boxLineSize);
-        setBarPathSize_jni(pathLineSize);
-
-        switch (boxColor.toLowerCase()){
-            case "red":
-                setBoxColor_jni(255,0,0);
-                break;
-            case "green":
-                setBoxColor_jni(0,255,0);
-                break;
-            case "blue":
-                setBoxColor_jni(0,0,255);
-                break;
-        }
-        switch (pathColor.toLowerCase()){
-            case "red":
-                setBarPathColor_jni(255,0,0);
-                break;
-            case "green":
-                setBarPathColor_jni(0,255,0);
-                break;
-            case "blue":
-                setBarPathColor_jni(0,0,255);
-                break;
-        }
+        //nastaveni uzivatelskeho nastaveni
+        Utilities.setUserSettings(sharedPreferences);
 
         //pridani dotykove funkcionality pro smazani
         ItemTouchHelper helper = new ItemTouchHelper(
@@ -386,16 +344,6 @@ public class MainActivity extends AppCompatActivity {
      */
     //inicializace detektoru a trackeru
     public native void init_jni(String cfg, String weights);
-
-    public native void setDrawBox_jni(boolean drawBox);
-
-    public native void setBoxSize_jni(int size);
-
-    public native void setBoxColor_jni(int r, int g, int b);
-
-    public native void setBarPathSize_jni(int size);
-
-    public native void setBarPathColor_jni(int r, int g, int b);
 
     public native void cleanUp_jni();
 }
