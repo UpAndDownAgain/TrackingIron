@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -203,6 +204,28 @@ public class MainActivity extends AppCompatActivity {
                 launchPlayVideoActivity(video);
             }
 
+        });
+        //zobrazi dialog pro prejmenovani polozky pri dlouhem dotyku
+        adapter.setLongClickListener(new VideoListAdapter.LongClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                Video video = adapter.getVideoAtPosition(position);
+                EditText input = new EditText(getApplicationContext());
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Change name")
+                        .setMessage("Enter new name")
+                        .setView(input)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String newName = input.getText().toString();
+                                Log.i("NAME CHANGE", "changing " + video.getName()
+                                        + " to " + newName);
+                                videoViewModel.changeName(newName, video.getName());
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).show();
+            }
         });
     }
 

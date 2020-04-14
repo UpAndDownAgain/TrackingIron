@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     clickListener.onItemClick(v, getAdapterPosition());
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    longClickListener.onItemClick(v, getAdapterPosition());
+                    return true;
+                }
+            });
         }
     }
 
@@ -34,6 +40,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private final LayoutInflater inflater;
     private List<Video> vids;
     private static ClickListener clickListener;
+    private static LongClickListener longClickListener;
 
     VideoListAdapter(Context context){
         inflater = LayoutInflater.from(context);
@@ -50,7 +57,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position){
         if(vids != null){
             Video current = vids.get(position);
-            holder.videoItemView.setText(current.getName());
+            holder.videoItemView.setText(current.getDisplayName());
         }else{
             holder.videoItemView.setText("");
         }
@@ -79,8 +86,17 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         VideoListAdapter.clickListener = clickListener;
     }
 
+    void setLongClickListener(LongClickListener clickListener){
+        VideoListAdapter.longClickListener = clickListener;
+    }
+
     public interface ClickListener {
         void onItemClick(View v, int position);
     }
+
+    public interface LongClickListener{
+        void onItemClick(View v, int position);
+    }
+
 
 }

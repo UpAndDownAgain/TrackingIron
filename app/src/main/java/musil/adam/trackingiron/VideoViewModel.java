@@ -33,4 +33,8 @@ public class VideoViewModel extends AndroidViewModel {
     public void delete(Video vid){
         repository.delete(vid);
     }
+
+    public void changeName(String newName, String name){
+        repository.changeName(newName, name);
+    }
 }
