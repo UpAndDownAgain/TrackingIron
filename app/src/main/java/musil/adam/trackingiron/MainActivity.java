@@ -67,15 +67,19 @@ public class MainActivity extends AppCompatActivity {
         //kontrola povoleni ke cteni uloziste
         checkMyPermission(MY_READ_PERMISSION_CODE);
 
-        //
+        //custom toolbar pro vlozeni menu s nastavenim
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //recyclerview pro zobrazeni zpracovanych videi z databaze
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
+
+        //adapter pro zaznamy z db
         final VideoListAdapter adapter = new VideoListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        //model pro manipulaci s db
         videoViewModel = new ViewModelProvider(this).get(VideoViewModel.class);
         videoViewModel.getAllVids().observe(this, new Observer<List<Video>>() {
             @Override
@@ -101,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
                     }).setIcon(android.R.drawable.ic_dialog_alert).show();
 
         }
+
+        //tocici se kolecko pri zpracovavani videa
         spinner = findViewById(R.id.spinner);
         spinner.setVisibility(View.GONE);
 
@@ -131,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
+                    //neni implementovano
                     @Override
                     public boolean onMove(@NonNull RecyclerView recyclerView,
                                           @NonNull RecyclerView.ViewHolder viewHolder,
@@ -163,7 +170,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-        //zobrazi dialog pro prejmenovani polozky pri dlouhem dotyku
+
+        /*
+         * pri dlouhem stisku se vytvori dialog pro prejmenovani videa pro zobrazeni
+         * nemeni se nazev videa v ulozisti pouze display name v db ktere se zobrazuje uzivateli
+         * v aplikaci
+         */
         adapter.setLongClickListener(new VideoListAdapter.LongClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -187,13 +199,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    /*
+     * vlozeni kebab menu s nastavenim do toolbaru
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
+    /*
+     * spusteni settings activity pri zvoleni z menu
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -206,29 +223,38 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    //zpracovavani navratu z aktivit
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        /*
+         * nacte Uri uzivatelem vybraneho videa pro zpracovani a spusti asynchroni
+         * zpracovani videa
+         */
         if (requestCode == SELECT_VIDEO_CODE && data != null) {
             Uri videoFileUri = data.getData();
 
             try {
                 //slozka ulozeni videa
                 File directory = Utilities.getMyAppDirectory();
-                //vytvoreni noveho video souboru se zakreslenou detekci
 
+                //string format videa, nejspis mp4
                 String format = Utilities.getFileExtensionFromUri(getApplicationContext(), videoFileUri);
 
+                //inicializace tridy pro zpracovavani videa
                 final VideoProcessor processor = new VideoProcessor(
                         getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
 
-                ProcessAsync processAsync = new ProcessAsync(processor, spinner, videoViewModel, getApplicationContext());
+                //obstarani asynchroniho zpracovani videa, zobrazi spinner pri zpracovavani
+                //po dokonceni zpracovani spusti novou aktivitu s prehranim videa
+                //a prida video do db
+                ProcessAsync processAsync = new ProcessAsync(processor, spinner,
+                                                videoViewModel, getApplicationContext());
                 processAsync.execute();
 
 
-
-                //todo pridani videa do seznamu
             }catch (IOException e){
                 e.printStackTrace();
                 new AlertDialog.Builder(this)
@@ -243,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    //spusteni nove aktivity k prehrani videa
     public void launchPlayVideoActivity(Video video){
         Intent intent = new Intent(this, VideoActivity.class);
         intent.setData(video.getVideoUri());
@@ -259,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
                         != PackageManager.PERMISSION_GRANTED) {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(
                             MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        //todo
+                        break;
                     } else {
                         ActivityCompat.requestPermissions(MainActivity.this,
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -274,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                         != PackageManager.PERMISSION_GRANTED) {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(
                             MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        //todo
+                        break;
                     } else {
                         ActivityCompat.requestPermissions(MainActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -285,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    //vysledek zadosti o permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
