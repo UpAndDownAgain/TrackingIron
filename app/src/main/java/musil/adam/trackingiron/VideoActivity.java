@@ -8,10 +8,10 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * aktivita k prehrani videa
+ */
 public class VideoActivity extends AppCompatActivity {
-
-    private VideoView videoView;
-    private MediaController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +22,8 @@ public class VideoActivity extends AppCompatActivity {
         Uri videoUri = intent.getData();
 
         //nastaveni videoview a kontroleru
-        videoView = findViewById(R.id.Video);
-        controller = new MediaController(this);
+        VideoView videoView = findViewById(R.id.Video);
+        MediaController controller = new MediaController(this);
         controller.setAnchorView(videoView);
         videoView.setMediaController(controller);
         videoView.setVideoURI(videoUri);

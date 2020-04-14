@@ -6,7 +6,10 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-public class VideoRepository {
+/**
+ * obsluha db
+ */
+class VideoRepository {
 
     private VideoDao videoDao;
     private LiveData<List<Video>> allVids;
@@ -22,7 +25,7 @@ public class VideoRepository {
     }
 
     void insert(Video video){
-        VideoRoomDatabase.databaseWriteExecutor.execute(()->{videoDao.insert(video);});
+        VideoRoomDatabase.databaseWriteExecutor.execute(()->videoDao.insert(video));
     }
 
     void delete(Video video){

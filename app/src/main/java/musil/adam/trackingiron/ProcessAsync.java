@@ -9,6 +9,14 @@ import android.widget.ProgressBar;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+/**
+ * Trida dedici z AsyncTask
+ * obstarava asynchroni zpracovani videa
+ * zobrazi spinner pri zpracovavani
+ * po dokonceni zpracovavani spusti novou aktivitu s videem
+ * pristup k objektum s kterymi pracuje ma pres weakreference
+ */
+
 class ProcessAsync extends AsyncTask<Void,Void,Void> {
 
     final private WeakReference<ProgressBar> progressBarRef;

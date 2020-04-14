@@ -14,10 +14,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * funkce vrati File objekt slozky DCIM/TrackingIron
- * pokud slozka neexistuje funkce ji vytvori
+ * pomocne staticke metody
  */
 class Utilities {
+    /**
+     * funkce vrati File objekt slozky DCIM/TrackingIron
+     * pokud slozka neexistuje funkce ji vytvori
+     */
     static File getMyAppDirectory() throws IOException{
         @SuppressWarnings("deprecation") File dcimDir = Environment.
                 getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
@@ -77,7 +80,6 @@ class Utilities {
      * preda je do nativni casti
      * @param sharedPreferences instance sharedpreferences
      */
-
     static void setUserSettings(SharedPreferences sharedPreferences){
         boolean drawBox;
         int boxLineSize;
