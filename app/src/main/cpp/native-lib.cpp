@@ -125,5 +125,5 @@ Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobje
 JNIEXPORT void JNICALL
 Java_musil_adam_trackingiron_VideoProcessor_resetTracker_1jni(JNIEnv *env, jobject thiz) {
     tracker.release();
-    tracker = cv::TrackerKCF::create();
+    tracker = cv::TrackerMOSSE::create();
 }

@@ -12,11 +12,11 @@ Detektor::Detektor(const std::string &cfgPath, const std::string &weightsPath) {
 }
 
 cv::Rect2d Detektor::detectObject(cv::Mat &frame) {
-    auto detections = preprocess(frame);
+    auto detections = preProces(frame);
     return  postProcess(frame, detections);
 }
 
-std::vector<cv::Mat> Detektor::preprocess(cv::Mat &frame) {
+std::vector<cv::Mat> Detektor::preProces(cv::Mat &frame) {
     std::vector<cv::Mat> outputs; //vystupy detekce
     cv::Mat blob; //predpripraveny snimek pro detektor
 
@@ -44,6 +44,7 @@ cv::Rect Detektor::postProcess(cv::Mat &frame, std::vector<cv::Mat> &outs) {
                 cv::minMaxLoc(scores, nullptr, &confidence, nullptr, &classIdPoint);
 
                 if(confidence > threshold){
+                    //souradnice boxu
                     int centerX = (int)(data[0] * frame.cols);
                     int centerY = (int)(data[1] * frame.rows);
                     int width = (int)(data[2] * frame.cols);
@@ -59,7 +60,8 @@ cv::Rect Detektor::postProcess(cv::Mat &frame, std::vector<cv::Mat> &outs) {
     return closestDetection(boxes);
 }
 /*
- * ponechani nejblizsi detekce, jako nejblizsi detekce je povazovana detekce s ohranicujicim boxem s nejvetsi plochou
+ * ponechani nejblizsi detekce
+ * jako nejblizsi detekce je povazovana detekce s ohranicujicim boxem s nejvetsi plochou
  */
 cv::Rect Detektor::closestDetection(std::vector<cv::Rect> &detections) {
     cv::Rect closestDetection;

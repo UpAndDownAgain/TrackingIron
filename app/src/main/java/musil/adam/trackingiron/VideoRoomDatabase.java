@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 public abstract class VideoRoomDatabase extends RoomDatabase {
 
     public abstract VideoDao videoDao();
-
     private static volatile VideoRoomDatabase INSTANCE;
     private static final int THREAD_NUM = 4;
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(THREAD_NUM);
