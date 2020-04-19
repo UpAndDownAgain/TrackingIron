@@ -5,23 +5,17 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
-import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.AndroidFrameConverter;
-import org.bytedeco.javacv.FFmpegFrameFilter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
-
-import static org.bytedeco.ffmpeg.global.swscale.SWS_AREA;
 
 /**
  * trida ke zpracovavani videa
@@ -40,7 +34,6 @@ class VideoProcessor {
     private int scaledWidth;
     private int scaledHeight;
     final private int scaleTo;
-    boolean portrait;
     final private String rotation;
 
 
@@ -92,6 +85,7 @@ class VideoProcessor {
         recorder.setVideoOption("crf", "28");
         recorder.setVideoBitrate(1000000);
         recorder.setFormat("mp4");
+        //nastaveni rotace puvodniho videa
         recorder.setVideoMetadata("rotate", rotation);
         recorder.start();
 
@@ -113,7 +107,6 @@ class VideoProcessor {
             bmp = converter.convert(frame);
             Utils.bitmapToMat(bmp, mat);
 
-            //Core.rotate(mat, mat, Core.ROTATE_90_CLOCKWISE);
            //provedeni detekce a zakresleni vysledku do snimku
             detectAndDraw_jni(mat.getNativeObjAddr());
 
@@ -139,11 +132,9 @@ class VideoProcessor {
         if (sourceHeight > sourceWidth) {
             //portraid mode
             scale = (double) scaleTo / (double) sourceHeight;
-            portrait = true;
         } else {
             //landscape mode
             scale = (double) scaleTo / (double) sourceWidth;
-            portrait = false;
         }
 
         scaledWidth = (int)(sourceWidth * scale);

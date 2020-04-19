@@ -12,7 +12,7 @@
 
 class Detektor {
 private:
-    double threshold;
+    double threshold = 0.3;
     cv::dnn::Net net;
     double scaleFactor = 1.0/255;
     cv::Size size = cv::Size(416, 416); //hodnoty z konfiguracniho souboru YOLO

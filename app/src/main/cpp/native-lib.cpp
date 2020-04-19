@@ -54,7 +54,7 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
     if(!trackerIsInit){
         __android_log_write(ANDROID_LOG_INFO, "Detector", "Using YOLO Detector");
         *detection = detektor->detectObject(*mat);
-        if(detection->empty() != true){
+        if(!detection->empty()){
             tracker->init(*mat, *detection);
             trackerIsInit = true;
         }
@@ -65,7 +65,11 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
         if(!ok){
             __android_log_write(ANDROID_LOG_INFO, "Detector", "Tracker Failed");
             *detection = detektor->detectObject(*mat);
-            tracker->init(*mat, *detection);
+            if(!detection->empty()) {
+                tracker->init(*mat, *detection);
+            }else{
+                trackerIsInit = false;
+            }
         }
     }
     /**
@@ -128,5 +132,5 @@ Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobje
 JNIEXPORT void JNICALL
 Java_musil_adam_trackingiron_VideoProcessor_resetTracker_1jni(JNIEnv *env, jobject thiz) {
     tracker.release();
-    tracker = cv::TrackerKCF::create();
+    tracker = cv::TrackerMOSSE::create();
 }
