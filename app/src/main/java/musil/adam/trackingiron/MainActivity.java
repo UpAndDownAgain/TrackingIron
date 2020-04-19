@@ -242,10 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
                 //string format videa, nejspis mp4
                 String format = Utilities.getFileExtensionFromUri(getApplicationContext(), videoFileUri);
-
+                String rotation = Utilities.getVideoRotation(getApplicationContext(), videoFileUri);
                 //inicializace tridy pro zpracovavani videa
                 final VideoProcessor processor = new VideoProcessor(
-                        getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION);
+                        getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION, rotation);
 
                 //obstarani asynchroniho zpracovani videa, zobrazi spinner pri zpracovavani
                 //po dokonceni zpracovani spusti novou aktivitu s prehranim videa

@@ -46,15 +46,18 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
     auto originalMat = (cv::Mat*)matAddress;
     cv::Rect2d *detection = new cv::Rect2d();
     cv::Mat *mat = new cv::Mat();
-
+    //cv::rotate(*originalMat, *originalMat, cv::ROTATE_90_CLOCKWISE);
     //prevod na 3kanalovou mat
     cv::cvtColor(*originalMat, *mat, CV_BGRA2BGR);
+
 
     if(!trackerIsInit){
         __android_log_write(ANDROID_LOG_INFO, "Detector", "Using YOLO Detector");
         *detection = detektor->detectObject(*mat);
-        tracker->init(*mat, *detection);
-        trackerIsInit = true;
+        if(detection->empty() != true){
+            tracker->init(*mat, *detection);
+            trackerIsInit = true;
+        }
     }else{
         __android_log_write(ANDROID_LOG_INFO, "Detector", "Using Tracker");
         bool ok = tracker->update(*mat, *detection);
@@ -125,5 +128,5 @@ Java_musil_adam_trackingiron_VideoProcessor_clearBarPath_1jni(JNIEnv *env, jobje
 JNIEXPORT void JNICALL
 Java_musil_adam_trackingiron_VideoProcessor_resetTracker_1jni(JNIEnv *env, jobject thiz) {
     tracker.release();
-    tracker = cv::TrackerMOSSE::create();
+    tracker = cv::TrackerKCF::create();
 }
