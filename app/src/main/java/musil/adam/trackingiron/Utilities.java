@@ -63,22 +63,14 @@ class Utilities {
 
     /**
      * funkce vrati pripomu souboru z uri, tzn mp4 a pod
-     * @param context context aplikace
-     * @param uri uri souboru
-     * @return retezec pripomy (mp4)
      */
-    static String getFileExtensionFromUri(Context context, Uri uri){
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(context, uri);
+    static String getFileExtensionFromUri(MediaMetadataRetriever retriever){
         String mimeType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
         return mimeType.split("/")[1];
     }
 
-    static String getVideoRotation(Context context, Uri uri){
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(context, uri);
-        return retriever.extractMetadata(
-                MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+    static String getVideoRotation(MediaMetadataRetriever retriever) {
+        return retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
     }
 
     /**
@@ -142,4 +134,5 @@ class Utilities {
     static public native void setBarPathSize_jni(int size);
 
     static public native void setBarPathColor_jni(int r, int g, int b);
+
 }

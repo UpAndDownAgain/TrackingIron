@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -238,12 +239,20 @@ public class MainActivity extends AppCompatActivity {
                 //slozka ulozeni videa
                 File directory = Utilities.getMyAppDirectory();
 
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(this, videoFileUri);
+
                 //string format videa, nejspis mp4
-                String format = Utilities.getFileExtensionFromUri(getApplicationContext(), videoFileUri);
-                String rotation = Utilities.getVideoRotation(getApplicationContext(), videoFileUri);
+                String format = Utilities.getFileExtensionFromUri(retriever);
+                //rotace videa landscape/portrait mode nejspis uvedena ve stupnich
+                String rotation = Utilities.getVideoRotation(retriever);
                 //inicializace tridy pro zpracovavani videa
-                final VideoProcessor processor = new VideoProcessor(
-                        getContentResolver(), videoFileUri, directory, format, SCALE_RESOLUTION, rotation);
+                final VideoProcessor processor = new VideoProcessor(getContentResolver(),
+                                                                    videoFileUri,
+                                                                    directory,
+                                                                    format,
+                                                                    SCALE_RESOLUTION,
+                                                                    rotation);
 
                 //obstarani asynchroniho zpracovani videa, zobrazi spinner pri zpracovavani
                 //po dokonceni zpracovani spusti novou aktivitu s prehranim videa

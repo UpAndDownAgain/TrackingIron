@@ -77,24 +77,24 @@ class VideoProcessor {
         //inicializace a spusteni framerecorderu, musi probehnout po spusteni framegrabberu
         FFmpegFrameRecorder recorder = FFmpegFrameRecorder.createDefault(out, scaledWidth, scaledHeight);
         recorder.setAudioChannels(0); //ignorujeme zvuk
+        //fps prevedeny na cele cislo
+        // protoze framerecorder nerozdycha realna cisla s dlouhou desetinou casti
         int fps = (int)grabber.getFrameRate();
         String rot = grabber.getVideoMetadata("rotation");
-        recorder.setFrameRate(fps); //stejny fps jako origo video
+        recorder.setFrameRate(fps);
         //nastaveni video kvality, cim horsi tim rychlejsi
         recorder.setVideoOption("preset", "ultrafast");
         recorder.setVideoOption("crf", "28");
         recorder.setVideoBitrate(1000000);
         recorder.setFormat("mp4");
-        //nastaveni rotace puvodniho videa
+        //nastaveni rotace dle puvodniho videa
         recorder.setVideoMetadata("rotate", rotation);
         recorder.start();
 
         Bitmap bmp;
-
         Mat mat = new Mat();
         Frame frame;
         int counter = 0;
-
 
         while(true){
             frame = grabber.grabImage();
@@ -110,6 +110,7 @@ class VideoProcessor {
            //provedeni detekce a zakresleni vysledku do snimku
             detectAndDraw_jni(mat.getNativeObjAddr());
 
+            //prevedeni zpet a zapis
             Utils.matToBitmap(mat, bmp);
             frame = converter.convert(bmp);
             recorder.record(frame);

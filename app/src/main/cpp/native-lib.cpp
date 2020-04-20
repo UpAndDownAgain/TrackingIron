@@ -78,9 +78,11 @@ Java_musil_adam_trackingiron_VideoProcessor_detectAndDraw_1jni(JNIEnv *env, jobj
      * height a weight udava vysku a sirku boxu
      * jako bod pro drahu povazuji stred ohranicujiciho boxu
      */
-    barPath.emplace_back(
-            cv::Point((int)(detection->x + (detection->width/2)),
-                      (int)(detection->y + (detection->height/2))));
+    if(!detection->empty()) {
+        barPath.emplace_back(
+                cv::Point((int) (detection->x + (detection->width / 2)),
+                          (int) (detection->y + (detection->height / 2))));
+    }
 
     if(drawBox){
         cv::rectangle(*originalMat, *detection, boxColor, boxSize);
