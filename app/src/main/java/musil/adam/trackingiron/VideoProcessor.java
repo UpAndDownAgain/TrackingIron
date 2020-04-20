@@ -88,6 +88,7 @@ class VideoProcessor {
         recorder.setVideoBitrate(1000000);
         recorder.setFormat("mp4");
         //nastaveni rotace dle puvodniho videa
+        //potreba rucne protoze grabber rotaci neresi
         recorder.setVideoMetadata("rotate", rotation);
         recorder.start();
 
