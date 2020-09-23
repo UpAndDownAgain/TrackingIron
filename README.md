@@ -5,4 +5,3 @@ zpracování obrazu pomocí [OpenCV](https://opencv.org/) a [JavaCV](https://git
 
 [Ukázka funkčnosti aplikace](https://drive.google.com/file/d/1LGdS1MTtKEG9rS0FXzdbMxRR2YurtObp/view?usp=sharing)
 
-[Prototyp pro testování modelu v C++](https://github.com/UpAndDownAgain/bp_prototyp)
